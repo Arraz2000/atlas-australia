@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Australia</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body { background: #060a0f; font-family: 'Georgia', 'Times New Roman', serif; }
+
+    /* Full-bleed map */
+    #map { position: fixed; inset: 0; width: 100vw; height: 100vh; }
+
+    /* ── Map title — bottom-left ── */
+    #map-title {
+      position: fixed; bottom: 48px; left: 36px; z-index: 20;
+      pointer-events: none;
+    }
+    #map-title h1 {
+      font-size: 2.2rem; font-weight: 400; letter-spacing: 0.08em;
+      color: #fff; text-transform: uppercase; line-height: 1.1;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    }
+    #map-title h2 {
+      font-size: 0.85rem; font-weight: 400; letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.55); text-transform: uppercase;
+      margin-top: 4px; font-family: system-ui, sans-serif;
+    }
+
+    /* ── Story panel (legacy — unused) ── */
+    #story-panel { display: none; }
+
+    /* ── Map selector — top-right ── */
+    #selector {
+      position: fixed; top: 24px; right: 24px; z-index: 30;
+      width: 240px;
+    }
+    #selector-toggle {
+      width: 100%; padding: 10px 16px;
+      background: rgba(6,10,15,0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.85); font-size: 0.78rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; text-align: left;
+      font-family: system-ui, sans-serif;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    #selector-toggle:hover { border-color: rgba(255,255,255,0.3); }
+    #selector-toggle .arrow { opacity: 0.5; transition: transform 0.2s; }
+    #selector-toggle.open .arrow { transform: rotate(180deg); }
+
+    #selector-list {
+      margin-top: 6px;
+      background: rgba(6,10,15,0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; overflow: hidden;
+      display: none;
+    }
+    #selector-list.open { display: block; }
+
+    .map-option {
+      padding: 12px 16px; cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.15s;
+    }
+    .map-option:last-child { border-bottom: none; }
+    .map-option:hover { background: rgba(255,255,255,0.06); }
+    .map-option.active { background: rgba(255,255,255,0.1); }
+    .map-option .opt-title {
+      color: rgba(255,255,255,0.9); font-size: 0.8rem;
+      font-family: system-ui, sans-serif; letter-spacing: 0.04em;
+    }
+    .map-option .opt-sub {
+      color: rgba(255,255,255,0.38); font-size: 0.7rem;
+      font-family: system-ui, sans-serif; margin-top: 2px;
+    }
+
+    /* ── Story toggle button ── */
+    #legend-story-btn {
+      margin-top: 10px; width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+      color: rgba(255,255,255,0.45); font-size: 0.68rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 7px 10px; cursor: pointer;
+      font-family: system-ui, sans-serif; text-align: center;
+    }
+    #legend-story-btn:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.1); }
+
+    /* ── Story panel — expands below button ── */
+    #legend-story-panel {
+      margin-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 12px;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.82rem; line-height: 1.65;
+      display: none;
+    }
+
+    /* ── Atlas wordmark — top-left ── */
+    #wordmark {
+      position: fixed; top: 24px; left: 28px; z-index: 20;
+      pointer-events: none;
+    }
+    #wordmark span {
+      font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); font-family: system-ui, sans-serif;
+    }
+
+    /* Scale control override */
+    .maplibregl-ctrl-scale {
+      background: rgba(6,10,15,0.6) !important;
+      border-color: rgba(255,255,255,0.2) !important;
+      color: rgba(255,255,255,0.5) !important;
+      font-size: 10px !important;
+    }
+
+    /* Fade transition */
+    #map { transition: opacity 0.4s ease; }
+    #map.fading { opacity: 0; }
+
+    /* ── Legend panel — top-left, flex column ── */
+    #legend-panel {
+      position: fixed; top: 24px; left: 28px; z-index: 20;
+      background: rgba(6,10,15,0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px; padding: 14px 16px;
+      min-width: 220px; max-width: 260px;
+      display: none;
+    }
+    #legend-panel .legend-title {
+      font-family: system-ui, sans-serif;
+      font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); margin-bottom: 10px;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 5px 0; cursor: pointer; user-select: none;
+    }
+    .legend-item:hover .legend-label { color: rgba(255,255,255,0.95); }
+    .legend-swatch {
+      width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0;
+      transition: opacity 0.2s;
+    }
+    .legend-label {
+      font-family: system-ui, sans-serif; font-size: 0.75rem;
+      color: rgba(255,255,255,0.7); transition: color 0.2s;
+      line-height: 1.2;
+    }
+    .legend-item.off .legend-swatch { opacity: 0.2; }
+    .legend-item.off .legend-label  { color: rgba(255,255,255,0.3); text-decoration: line-through; }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <div id="wordmark"><span>Atlas Australia</span></div>
+
+  <div id="map-title">
+    <h1 id="title-main"></h1>
+    <h2 id="title-sub"></h2>
+  </div>
+
+  <button id="story-btn" onclick="toggleStory()" style="display:none">About this map</button>
+  <div id="story-panel"></div>
+
+  <div id="selector">
+    <button id="selector-toggle" onclick="toggleSelector()">
+      <span id="selector-label">Select a map</span>
+      <span class="arrow">▾</span>
+    </button>
+    <div id="selector-list"></div>
+  </div>
+
+  <div id="legend-panel">
+    <div class="legend-title">Layers</div>
+    <div id="legend-items"></div>
+    <button id="legend-story-btn" onclick="toggleStory()">About this map</button>
+    <div id="legend-story-panel"></div>
+  </div>
+
+  <script type="module">
+    import { ATLAS_MAPS, DEFAULT_VIEW } from './src/maps.js';
+    import { Protocol } from 'pmtiles';
+
+    // Register PMTiles protocol so MapLibre can load pmtiles:// URLs
+    const protocol = new Protocol();
+    maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
+
+    const STATE_COLOURS = [
+      '#2563eb','#059669','#dc2626','#d97706',
+      '#7c3aed','#0891b2','#be185d','#65a30d'
+    ];
+
+    let currentMapId = null;
+    let statesGeoJSON = null;
+
+    // ── Zoom based on window height ───────────────────────────
+    // MapLibre uses 512px tiles. Australia spans ~-10° to -44° lat.
+    function calcAustraliaZoom() {
+      const toMercY = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+      const mercSpan = toMercY(-10) - toMercY(-44);
+      const worldFraction = mercSpan / (2 * Math.PI);
+      const targetPx = window.innerHeight * 0.88;
+      return Math.log2(targetPx / (512 * worldFraction));
+    }
+
+    // ── Init map ──────────────────────────────────────────────
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: ATLAS_MAPS[0].baseStyle,
+      center: DEFAULT_VIEW.center,
+      zoom: calcAustraliaZoom(),
+      minZoom: DEFAULT_VIEW.minZoom,
+      maxZoom: DEFAULT_VIEW.maxZoom,
+      // No maxBounds — it forces zoom up as window widens, defeating height-based sizing
+      attributionControl: false,
+    });
+
+    // Re-fit on resize — only if user hasn't zoomed away from home
+    map.on('resize', () => {
+      const homeZoom = calcAustraliaZoom();
+      if (Math.abs(map.getZoom() - homeZoom) < 0.6) {
+        map.setZoom(homeZoom);
+      }
+    });
+
+    map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+
+    // ── Load states GeoJSON once ──────────────────────────────
+    async function loadStates() {
+      const r = await fetch('./states.geojson');
+      statesGeoJSON = await r.json();
+    }
+
+    // ── Build selector list ───────────────────────────────────
+    function buildSelector() {
+      const list = document.getElementById('selector-list');
+      list.innerHTML = ATLAS_MAPS.map((m, i) => `
+        <div class="map-option${i===0?' active':''}" data-id="${m.id}" onclick="window._selectMap('${m.id}')">
+          <div class="opt-title">${m.title}</div>
+          <div class="opt-sub">${m.subtitle}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── Apply a map ───────────────────────────────────────────
+    async function applyMap(mapDef) {
+      // Update title + story
+      document.getElementById('title-main').textContent = mapDef.title;
+      document.getElementById('title-sub').textContent = mapDef.subtitle;
+      document.getElementById('legend-story-panel').textContent = mapDef.story;
+      document.getElementById('selector-label').textContent = mapDef.title;
+
+      // Update legend
+      const legendPanel = document.getElementById('legend-panel');
+      const legendItems = document.getElementById('legend-items');
+      if (mapDef.legend && mapDef.legend.length) {
+        legendItems.innerHTML = mapDef.legend.map((entry, i) => `
+          <div class="legend-item" id="legend-item-${i}" onclick="window._toggleLegendItem(${i})">
+            <div class="legend-swatch" style="background:${entry.colour}"></div>
+            <div class="legend-label">${entry.label}</div>
+          </div>
+        `).join('');
+        legendPanel.style.display = 'block';
+
+        window._toggleLegendItem = function(i) {
+          const entry = mapDef.legend[i];
+          const el = document.getElementById(`legend-item-${i}`);
+          const isOff = el.classList.toggle('off');
+          entry.layerIds.forEach(id => {
+            if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', isOff ? 'none' : 'visible');
+          });
+        };
+      } else {
+        legendPanel.style.display = 'none';
+        legendItems.innerHTML = '';
+      }
+
+      // Mark active in list
+      document.querySelectorAll('.map-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === mapDef.id);
+      });
+
+      // Add state fill layer (unless map opts out with noStateFills)
+      if (statesGeoJSON && !mapDef.noStateFills) {
+        if (map.getLayer('state-fills')) map.removeLayer('state-fills');
+        if (map.getLayer('state-lines')) map.removeLayer('state-lines');
+        if (map.getSource('states'))    map.removeSource('states');
+
+        map.addSource('states', { type: 'geojson', data: statesGeoJSON });
+
+        const fills = mapDef.palette.fill;
+        map.addLayer({
+          id: 'state-fills',
+          type: 'fill',
+          source: 'states',
+          paint: {
+            'fill-color': [
+              'match', ['get', 'STATE_CODE'],
+              '1', fills[0] || STATE_COLOURS[0],
+              '2', fills[1] || STATE_COLOURS[1],
+              '3', fills[2] || STATE_COLOURS[2],
+              '4', fills[3] || STATE_COLOURS[3],
+              '5', fills[4] || STATE_COLOURS[4],
+              '6', fills[5] || STATE_COLOURS[5],
+              '7', fills[6] || STATE_COLOURS[6],
+              '8', fills[7] || STATE_COLOURS[7],
+              STATE_COLOURS[0]
+            ],
+            'fill-opacity': 0.55,
+          }
+        });
+
+        map.addLayer({
+          id: 'state-lines',
+          type: 'line',
+          source: 'states',
+          paint: {
+            'line-color': mapDef.palette.stroke || '#ffffff',
+            'line-width': 0.8,
+            'line-opacity': 0.6,
+          }
+        });
+      } else if (statesGeoJSON && mapDef.noStateFills) {
+        // Clean up state layers if switching from a map that had them
+        if (map.getLayer('state-fills')) map.removeLayer('state-fills');
+        if (map.getLayer('state-lines')) map.removeLayer('state-lines');
+        if (map.getSource('states'))    map.removeSource('states');
+      }
+
+      // Add map-specific sources
+      for (const src of (mapDef.sources || [])) {
+        if (!map.getSource(src.id)) {
+          map.addSource(src.id, src.spec);
+        }
+      }
+
+      // Add map-specific layers (above state fills)
+      for (const layerDef of (mapDef.layers || [])) {
+        if (!map.getLayer(layerDef.id)) {
+          // Insert before state outlines if present, otherwise add on top
+          if (map.getLayer('state-lines')) {
+            map.addLayer(layerDef, 'state-lines');
+          } else {
+            map.addLayer(layerDef);
+          }
+        }
+      }
+    }
+
+    // ── Select map (called from HTML onclick) ─────────────────
+    window._selectMap = function(id) {
+      if (id === currentMapId) { closeSelector(); return; }
+      const mapDef = ATLAS_MAPS.find(m => m.id === id);
+      if (!mapDef) return;
+      currentMapId = id;
+      closeSelector();
+
+      // Reset to default Australia view when switching maps
+      map.flyTo({ center: DEFAULT_VIEW.center, zoom: calcAustraliaZoom(), duration: 800 });
+
+      // Switch base style then re-apply layers
+      map.setStyle(mapDef.baseStyle);
+      map.once('styledata', () => applyMap(mapDef));
+    };
+
+    // ── Selector open/close ───────────────────────────────────
+    window.toggleSelector = function() {
+      const list = document.getElementById('selector-list');
+      const btn  = document.getElementById('selector-toggle');
+      list.classList.toggle('open');
+      btn.classList.toggle('open');
+    };
+    function closeSelector() {
+      document.getElementById('selector-list').classList.remove('open');
+      document.getElementById('selector-toggle').classList.remove('open');
+    }
+
+    // ── Story panel ───────────────────────────────────────────
+    window.toggleStory = function() {
+      const p = document.getElementById('legend-story-panel');
+      p.style.display = p.style.display === 'block' ? 'none' : 'block';
+    };
+
+    // ── Bootstrap ─────────────────────────────────────────────
+    map.on('load', async () => {
+      await loadStates();
+      buildSelector();
+      // Load first map
+      const first = ATLAS_MAPS[0];
+      currentMapId = first.id;
+      await applyMap(first);
+      document.getElementById('selector-label').textContent = first.title;
+    });
+  </script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 // Each map may define `sources` (added to MapLibre) and `layers` (MapLibre layer objects)
 
 const MT = import.meta.env.VITE_MAPTILER_KEY;
+const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
 export const ATLAS_MAPS = [
   {
@@ -35,7 +36,7 @@ export const ATLAS_MAPS = [
     sources: [
       {
         id: 'protected-areas',
-        spec: { type: 'vector', url: 'pmtiles://./capad_2024.pmtiles' },
+        spec: { type: 'vector', url: `pmtiles://${R2}/capad_2024.pmtiles` },
       },
     ],
     legend: [

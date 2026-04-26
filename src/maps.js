@@ -148,8 +148,8 @@ export const ATLAS_MAPS = [
     subtitle: 'Significant flood events from 1974 to 2022',
     story: 'Flooding is Australia\'s costliest natural hazard. The 2022 South-East Queensland floods inundated large parts of Greater Brisbane in February and March, killing 13 people. The 2011 Queensland floods were the most catastrophic in the state\'s modern history — affecting 75 towns, displacing 200,000 people, and costing $2.4 billion. The 1974 Brisbane River flood remains the benchmark: still the highest recorded flood in Brisbane history, peaking at 6.6 metres at the Brisbane City Gauge. Data covers South-East Queensland only — a national flood extent dataset equivalent to the GA fire mapping does not yet exist.',
     noStateFills: true,
-    initialZoom: 6.0,
-    initialCenter: [152.4, -27.5],
+    initialZoom: 5.8,
+    initialCenter: [148.5, -26.0],
     eventSelector: {
       label: 'Select flood event',
       layerPrefix: 'floods',

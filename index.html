@@ -157,8 +157,8 @@
     .legend-item.off .legend-swatch { opacity: 0.2; }
     .legend-item.off .legend-label  { color: rgba(255,255,255,0.3); text-decoration: line-through; }
 
-    /* ── Fire year selector — bottom-left, above title ── */
-    #fire-year-selector {
+    /* ── Event selector (fires / floods) — bottom-left, above title ── */
+    #event-selector {
       position: fixed; bottom: 120px; left: 36px; z-index: 20;
       display: none;
     }
@@ -211,8 +211,8 @@
     <div id="legend-story-panel"></div>
   </div>
 
-  <div id="fire-year-selector">
-    <div class="fy-label">Select fire season</div>
+  <div id="event-selector">
+    <div class="fy-label" id="event-selector-label">Select event</div>
     <div id="fy-buttons"></div>
   </div>
 
@@ -386,37 +386,41 @@
         }
       }
 
-      // Handle fire year selector
-      const fyrSelector = document.getElementById('fire-year-selector');
+      // Handle event selector (fires, floods, etc.)
+      const evtSelector = document.getElementById('event-selector');
+      const evtLabel    = document.getElementById('event-selector-label');
       const fyrButtons  = document.getElementById('fy-buttons');
-      if (mapDef.fireYears && mapDef.fireYears.length) {
-        fyrButtons.innerHTML = mapDef.fireYears.map(yr => `
-          <button class="fy-btn" data-year="${yr.id}" data-colour="${yr.colour}"
-            onclick="window._selectFireYear('${yr.id}')">
-            ${yr.label}
+      const sel = mapDef.eventSelector;
+      if (sel && sel.events && sel.events.length) {
+        evtLabel.textContent = sel.label || 'Select event';
+        fyrButtons.innerHTML = sel.events.map(ev => `
+          <button class="fy-btn" data-year="${ev.id}" data-colour="${ev.colour}"
+            onclick="window._selectEvent('${ev.id}')">
+            ${ev.label}
           </button>
         `).join('');
-        fyrSelector.style.display = 'block';
-        window._currentFireMap = mapDef;
-        window._selectFireYear(mapDef.fireYears[0].id);
+        evtSelector.style.display = 'block';
+        window._currentEventMap = mapDef;
+        window._selectEvent(sel.events[0].id);
       } else {
-        fyrSelector.style.display = 'none';
-        window._currentFireMap = null;
+        evtSelector.style.display = 'none';
+        window._currentEventMap = null;
       }
     }
 
-    // ── Select fire year ──────────────────────────────────────
-    window._selectFireYear = function(yearId) {
-      const mapDef = window._currentFireMap;
-      if (!mapDef || !mapDef.fireYears) return;
-      mapDef.fireYears.forEach(yr => {
-        const vis = yr.id === yearId ? 'visible' : 'none';
-        [`fires-${yr.id}-fill`, `fires-${yr.id}-outline`].forEach(lid => {
+    // ── Select event (fires / floods) ────────────────────────
+    window._selectEvent = function(eventId) {
+      const mapDef = window._currentEventMap;
+      if (!mapDef || !mapDef.eventSelector) return;
+      const prefix = mapDef.eventSelector.layerPrefix;
+      mapDef.eventSelector.events.forEach(ev => {
+        const vis = ev.id === eventId ? 'visible' : 'none';
+        [`${prefix}-${ev.id}-fill`, `${prefix}-${ev.id}-outline`].forEach(lid => {
           if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', vis);
         });
       });
       document.querySelectorAll('.fy-btn').forEach(btn => {
-        const active = btn.dataset.year === yearId;
+        const active = btn.dataset.year === eventId;
         btn.classList.toggle('active', active);
         btn.style.borderColor = active ? btn.dataset.colour : '';
         btn.style.color = active ? btn.dataset.colour : '';
@@ -431,8 +435,10 @@
       currentMapId = id;
       closeSelector();
 
-      // Reset to default Australia view when switching maps
-      map.flyTo({ center: DEFAULT_VIEW.center, zoom: calcAustraliaZoom(), duration: 800 });
+      // Reset to default Australia view when switching maps, or map's custom view
+      const center = mapDef.initialCenter || DEFAULT_VIEW.center;
+      const zoom   = mapDef.initialZoom   || calcAustraliaZoom();
+      map.flyTo({ center, zoom, duration: 800 });
 
       // Switch base style then re-apply layers
       map.setStyle(mapDef.baseStyle);

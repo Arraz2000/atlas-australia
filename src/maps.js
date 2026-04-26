@@ -207,13 +207,13 @@ export const ATLAS_MAPS = [
         paint: { 'fill-color': '#f9a825', 'fill-opacity': 0.75 } },
       { id: 'solar-dot',  type: 'circle', source: 'renewables', 'source-layer': 'renewables',
         filter: ['all', ['==', ['get', 'kind'], 'solar'], ['==', ['geometry-type'], 'Point']],
-        paint: { 'circle-radius': 4, 'circle-color': '#f9a825', 'circle-opacity': 0.8 } },
+        paint: { 'circle-radius': ['interpolate',['linear'],['zoom'], 4,7, 7,5, 14,3], 'circle-color': '#f9a825', 'circle-opacity': 0.85 } },
       { id: 'wind-fill',  type: 'fill', source: 'renewables', 'source-layer': 'renewables',
         filter: ['==', ['get', 'kind'], 'wind'],
         paint: { 'fill-color': '#4fc3f7', 'fill-opacity': 0.75 } },
       { id: 'wind-dot',   type: 'circle', source: 'renewables', 'source-layer': 'renewables',
         filter: ['all', ['==', ['get', 'kind'], 'wind'], ['==', ['geometry-type'], 'Point']],
-        paint: { 'circle-radius': 4, 'circle-color': '#4fc3f7', 'circle-opacity': 0.8 } },
+        paint: { 'circle-radius': ['interpolate',['linear'],['zoom'], 4,7, 7,5, 14,3], 'circle-color': '#4fc3f7', 'circle-opacity': 0.85 } },
     ],
   },
   {
@@ -235,21 +235,125 @@ export const ATLAS_MAPS = [
     legend: [
       { label: 'Mine / industrial site', layerIds: ['mines-fill','mines-dot'], colour: '#bf8c30' },
       { label: 'Quarry',                 layerIds: ['quarry-fill'],            colour: '#8d6e63' },
-      { label: 'Historic mine',          layerIds: ['historic-dot'],           colour: '#78909c' },
     ],
     layers: [
       { id: 'quarry-fill',  type: 'fill', source: 'mines', 'source-layer': 'mines',
         filter: ['==', ['get', 'kind'], 'quarry'],
         paint: { 'fill-color': '#8d6e63', 'fill-opacity': 0.7 } },
       { id: 'mines-fill',   type: 'fill', source: 'mines', 'source-layer': 'mines',
-        filter: ['!in', ['get', 'kind'], ['literal', ['quarry','mineshaft']]],
+        filter: ['match', ['get', 'kind'], ['quarry','mineshaft'], false, true],
         paint: { 'fill-color': '#bf8c30', 'fill-opacity': 0.75 } },
       { id: 'mines-dot',    type: 'circle', source: 'mines', 'source-layer': 'mines',
-        filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'kind'], 'historic']],
-        paint: { 'circle-radius': 4, 'circle-color': '#bf8c30', 'circle-opacity': 0.85 } },
-      { id: 'historic-dot', type: 'circle', source: 'mines', 'source-layer': 'mines',
-        filter: ['all', ['==', ['geometry-type'], 'Point'], ['==', ['get', 'kind'], 'mine']],
-        paint: { 'circle-radius': 3, 'circle-color': '#78909c', 'circle-opacity': 0.7 } },
+        filter: ['==', ['geometry-type'], 'Point'],
+        paint: { 'circle-radius': ['interpolate',['linear'],['zoom'], 4,7, 7,5, 14,3], 'circle-color': '#bf8c30', 'circle-opacity': 0.85 } },
+    ],
+  },
+  {
+    id: 'population',
+    title: 'Population Density',
+    subtitle: '2021 Census — people per km²',
+    story: 'Australia is one of the world\'s least densely populated countries — 26 million people spread across 7.7 million km², with the vast majority hugging the coastline. This map shows population density by Statistical Area Level 2 (SA2) from the 2021 ABS Census. The concentration in Sydney, Melbourne, Brisbane, Perth and Adelaide is stark: 80% of Australians live within 50km of the coast. The outback interior, which covers 70% of the country\'s land area, holds less than 5% of the population. Colour scale is logarithmic — each band represents a 10× increase in density.',
+    noStateFills: true,
+    palette: {
+      background: '#0a0f1a',
+      fill: ['#08306b'],
+      stroke: '#2171b5',
+      text: '#c6dbef',
+    },
+    baseStyle: 'https://tiles.openfreemap.org/styles/dark',
+    sources: [
+      { id: 'population', spec: { type: 'vector', url: `pmtiles://${R2}/population.pmtiles` } },
+    ],
+    legend: [
+      { label: '< 1 p/km²  (outback)',       colour: '#f7fbff' },
+      { label: '1 – 10',                       colour: '#c6dbef' },
+      { label: '10 – 50',                      colour: '#6baed6' },
+      { label: '50 – 200',                     colour: '#2171b5' },
+      { label: '200 – 1,000',                  colour: '#08519c' },
+      { label: '1,000 – 5,000',               colour: '#08306b' },
+      { label: '> 5,000  (inner city)',        colour: '#ffffff' },
+    ],
+    layers: [
+      { id: 'pop-fill', type: 'fill', source: 'population', 'source-layer': 'population',
+        paint: {
+          'fill-color': ['step', ['get', 'density'],
+            '#f7fbff',
+            1,    '#c6dbef',
+            10,   '#6baed6',
+            50,   '#2171b5',
+            200,  '#08519c',
+            1000, '#08306b',
+            5000, '#ffffff',
+          ],
+          'fill-opacity': 0.85,
+        },
+      },
+      { id: 'pop-outline', type: 'line', source: 'population', 'source-layer': 'population',
+        paint: { 'line-color': '#1a2a3a', 'line-width': 0.3, 'line-opacity': 0.5 },
+      },
+    ],
+  },
+  {
+    id: 'land-access',
+    title: 'Land Access',
+    subtitle: 'Protected, forest, farmland & urban — who owns Australia',
+    story: 'Land access across Australia mapped from OpenStreetMap — where community contributors have tagged land use, tenure, and access. Protected areas (national parks, reserves, conservation areas) are shown in dark green. Publicly accessible forests and crown land in mid-green. Farmland and pastoral areas in tan. Urban and built-up areas in orange. Coverage is excellent in populated regions — zoom in to see individual streets and parcels. Remote and rural areas may be sparse where OSM contributors haven\'t yet mapped land tenure. Data is community-maintained and does not represent legal tenure boundaries.',
+    noStateFills: true,
+    palette: {
+      background: '#f5f0e8',
+      fill: ['#2d6a4f'],
+      stroke: '#2d6a4f',
+      text: '#2d3a2e',
+    },
+    legend: [
+      { label: 'Protected (National Parks & Reserves)', layerIds: ['landaccess-protected'], colour: '#2d6a4f' },
+      { label: 'Forest, Crown Land & Native Grazing',  layerIds: ['landaccess-forest'],    colour: '#52b788' },
+      { label: 'Farmland (Crops & Pastoral)',          layerIds: ['landaccess-farmland'],  colour: '#c8a96e' },
+      { label: 'Urban & Built-up',                     layerIds: ['landaccess-urban'],     colour: '#bf6030' },
+    ],
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      { id: 'landaccess', spec: { type: 'vector', url: `pmtiles://${R2}/landaccess.pmtiles` } },
+    ],
+    layers: [
+      {
+        id: 'landaccess-protected',
+        type: 'fill',
+        source: 'landaccess',
+        'source-layer': 'landaccess',
+        filter: ['==', ['get', 'category'], 'protected'],
+        paint: {
+          'fill-color': '#2d6a4f',
+          'fill-opacity': 0.75,
+        },
+      },
+      {
+        id: 'landaccess-forest',
+        type: 'fill',
+        source: 'landaccess',
+        'source-layer': 'landaccess',
+        filter: ['==', ['get', 'category'], 'forest'],
+        paint: { 'fill-color': '#52b788', 'fill-opacity': 0.75 },
+      },
+      {
+        id: 'landaccess-farmland',
+        type: 'fill',
+        source: 'landaccess',
+        'source-layer': 'landaccess',
+        filter: ['==', ['get', 'category'], 'farmland'],
+        paint: { 'fill-color': '#c8a96e', 'fill-opacity': 0.65 },
+      },
+      {
+        id: 'landaccess-urban',
+        type: 'fill',
+        source: 'landaccess',
+        'source-layer': 'landaccess',
+        filter: ['==', ['get', 'category'], 'urban'],
+        paint: {
+          'fill-color': '#bf6030',
+          'fill-opacity': 0.75,
+        },
+      },
     ],
   },
   {
@@ -284,7 +388,7 @@ export const ATLAS_MAPS = [
         filter: ['==', ['get', 'mtb_scale'], ''],
         paint: {
           'line-color': '#5a6a5a',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.8, 10, 1.5, 14, 2.5],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 4, 2, 6, 1.2, 10, 1.5, 14, 2.5],
           'line-opacity': 0.6,
         },
       },
@@ -296,7 +400,7 @@ export const ATLAS_MAPS = [
         filter: ['in', ['get', 'mtb_scale'], ['literal', ['0','0+','0-','1','1+','1-','1;0','0;1','Green']]],
         paint: {
           'line-color': '#27ae60',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.9, 10, 1.8, 14, 3],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 4, 2.5, 6, 1.2, 10, 1.8, 14, 3],
           'line-opacity': 0.85,
         },
       },
@@ -308,7 +412,7 @@ export const ATLAS_MAPS = [
         filter: ['in', ['get', 'mtb_scale'], ['literal', ['2','2+','2-','2;1','1;2','Blue']]],
         paint: {
           'line-color': '#2980b9',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 6, 0.9, 10, 1.8, 14, 3],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 4, 2.5, 6, 1.2, 10, 1.8, 14, 3],
           'line-opacity': 0.85,
         },
       },
@@ -320,7 +424,7 @@ export const ATLAS_MAPS = [
         filter: ['in', ['get', 'mtb_scale'], ['literal', ['3','3+','Black','Blue / Black']]],
         paint: {
           'line-color': '#bdc3c7',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 6, 1, 10, 2, 14, 3.5],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 4, 2.5, 6, 1.2, 10, 2, 14, 3.5],
           'line-opacity': 0.9,
         },
       },
@@ -332,7 +436,7 @@ export const ATLAS_MAPS = [
         filter: ['in', ['get', 'mtb_scale'], ['literal', ['4','4+','5','5; 3','6']]],
         paint: {
           'line-color': '#e74c3c',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 6, 1, 10, 2, 14, 3.5],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 4, 2.5, 6, 1.2, 10, 2, 14, 3.5],
           'line-opacity': 0.95,
         },
       },
@@ -396,6 +500,382 @@ export const ATLAS_MAPS = [
     baseStyle: 'https://tiles.openfreemap.org/styles/dark',
     sources: [],
     layers: [],
+  },
+
+  // ── Historical maps ────────────────────────────────────────────
+
+  {
+    id: 'historical-arrowsmith-1844',
+    title: 'Arrowsmith 1844',
+    subtitle: 'Colonial survey of Australia',
+    story: 'John Arrowsmith\u2019s 1844 map of Australia \u2014 drawn in London from the surveys of Matthew Flinders, Nicolas Baudin, and the British Admiralty. It captures the continent as British colonists understood it: the settled coasts mapped in meticulous detail, the interior almost entirely blank. Only five years since the first overland crossing of southern Australia by Edward John Eyre. Perth, Adelaide, Melbourne, Sydney, and Hobart are marked; Darwin, Alice Springs, and most of Queensland do not yet exist. The map is a portrait of a continent still being written.',
+    palette: {
+      background: '#f5f0e8',
+      fill: ['#c8a878'],
+      stroke: '#7a6040',
+      text: '#3a2a10',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-arrowsmith',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_arrowsmith.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-arrowsmith-layer',
+        type: 'raster',
+        source: 'historical-arrowsmith',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-thomson-1814',
+    title: 'Thomson 1814',
+    subtitle: 'First map named \u201cAustralia\u201d',
+    story: 'John Thomson\u2019s 1814 map of Australia, New Zealand and New Guinea was among the first major English atlases to adopt Matthew Flinders\u2019 proposed name \u201cAustralia\u201d for the continent. Published in Edinburgh the same year Flinders\u2019 own \u201cA Voyage to Terra Australis\u201d appeared, Thomson\u2019s map captured the continent at the dawn of its naming \u2014 the coastline traced from naval surveys, the interior a speculation. New South Wales was the only significant colony; the sites of Melbourne, Adelaide, and Perth were uninhabited. Tasmania was called Van Diemen\u2019s Land. New Guinea appeared hazily to the north. A document of what was known, and how much was not.',
+    palette: {
+      background: '#f0ebe0',
+      fill: ['#b89a6e'],
+      stroke: '#6b5030',
+      text: '#3a2a10',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-thomson-1814-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_thomson_1814.pmtiles`,
+          tileSize: 256,
+          maxzoom: 9,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-thomson-1814-layer',
+        type: 'raster',
+        source: 'historical-thomson-1814-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-pinkerton-1818',
+    title: 'Pinkerton 1818',
+    subtitle: 'Post-Flinders survey of Australasia',
+    story: 'John Pinkerton\u2019s 1818 map of Australia and New Zealand, published in his acclaimed \u201cModern Atlas\u201d in London. Just four years after Matthew Flinders completed the first circumnavigation of Australia, Pinkerton incorporated the resulting surveys into one of the first detailed maps to show the continent under its new name. The coastline is now mostly accurate \u2014 Flinders\u2019 painstaking work along the Great Australian Bight, the Gulf of Carpentaria, and the south coast is visible in the detail. The interior remains blank. New Zealand appears to the east, still largely unknown to European science. A transitional map \u2014 the era of guesswork ending, the era of inland exploration yet to begin.',
+    palette: {
+      background: '#ede8d8',
+      fill: ['#a88c60'],
+      stroke: '#5c4020',
+      text: '#2e1e08',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-pinkerton-1818-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_pinkerton_1818.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-pinkerton-1818-layer',
+        type: 'raster',
+        source: 'historical-pinkerton-1818-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-tallis-1851',
+    title: 'Tallis 1851',
+    subtitle: 'Victorian ornamental map of Australia',
+    story: 'John Tallis & Company\u2019s 1851 \u201cExploration Map of Australia\u201d is one of the great showpieces of Victorian cartography. Published during the gold rush era, it frames the continent in elaborate engraved panels depicting Aboriginal Australians, colonial scenes, native fauna, and portraits of explorers. The interior is still largely blank \u2014 Ludwig Leichhardt and Charles Sturt had pushed inland, but Burke and Wills were still a decade away. The coastline is now precisely drawn. Inset maps show King George\u2019s Sound, Port Jackson, and Spencer Gulf in detail. Gold had just been discovered in New South Wales; within months of publication, Victoria would become the richest place on earth.',
+    palette: {
+      background: '#f5efd8',
+      fill: ['#d4b06a'],
+      stroke: '#7a5a20',
+      text: '#3c2a08',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-tallis-1851-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_tallis_1851.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-tallis-1851-layer',
+        type: 'raster',
+        source: 'historical-tallis-1851-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-johnson-1862',
+    title: 'Johnson 1862',
+    subtitle: 'American atlas map of Australia',
+    story: 'A. J. Johnson\u2019s 1862 map of Australia, published in New York at the height of the American Civil War. By 1862 the interior of Australia was no longer entirely blank \u2014 Robert Burke and William Wills had crossed the continent from south to north the previous year (and died returning). Stuart\u2019s successful crossing followed in 1862 itself. Johnson\u2019s map was already out of date the moment it was printed: it shows the vast interior still labelled as desert and unexplored wilderness. Queensland had just been declared a separate colony. The goldfields of Victoria were producing staggering wealth. A continent being rapidly known, and rapidly transformed.',
+    palette: {
+      background: '#f2ece0',
+      fill: ['#c09a70'],
+      stroke: '#705030',
+      text: '#3a2810',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-johnson-1862-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_johnson_1862.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-johnson-1862-layer',
+        type: 'raster',
+        source: 'historical-johnson-1862-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-mitchell-1864',
+    title: 'Mitchell 1864',
+    subtitle: 'Philadelphia atlas map of Australasia',
+    story: 'Samuel Augustus Mitchell Jr.\u2019s 1864 map of Australia and Polynesia, published in Philadelphia during the American Civil War. Mitchell was one of America\u2019s most prolific commercial cartographers, and his atlas maps reached enormous print runs. This plate shows Australia alongside the Pacific \u2014 New Zealand, Fiji, and the islands of Melanesia and Micronesia charted in varying degrees of accuracy. The Australian interior now shows overland explorer routes: the tracks of Burke, Wills, and Stuart are dimly present. The telegraph line from Adelaide to Darwin \u2014 which would connect Australia to the world in 1872 \u2014 was still years away.',
+    palette: {
+      background: '#ece8dc',
+      fill: ['#b8966a'],
+      stroke: '#685030',
+      text: '#342010',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-mitchell-1864-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_mitchell_1864.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-mitchell-1864-layer',
+        type: 'raster',
+        source: 'historical-mitchell-1864-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-stieler-1876',
+    title: 'Stieler 1876',
+    subtitle: 'Perthes atlas: southeastern Australia',
+    story: 'Adolf Stieler\u2019s 1876 map of Southeastern Australia, published by Justus Perthes in Gotha \u2014 the most respected cartographic house in 19th-century Europe. The Perthes/Stieler atlases were celebrated for their scientific precision, and this map shows it: the Murray-Darling river system is drawn with exceptional accuracy, the goldfields of Victoria are marked, and the colonies of New South Wales, Victoria, and South Australia are clearly delineated. Tasmania (Van Diemen\u2019s Land until 1856) appears in the south. The year 1876 was the midpoint of the colonial era \u2014 Queensland was booming, inland settlement was pushing into the Riverina, and the age of the great pastoral runs was at its peak.',
+    palette: {
+      background: '#ede5d0',
+      fill: ['#b8926a'],
+      stroke: '#604828',
+      text: '#2e1808',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-stieler-1876-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_stieler_1876.pmtiles`,
+          tileSize: 256,
+          maxzoom: 9,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-stieler-1876-layer',
+        type: 'raster',
+        source: 'historical-stieler-1876-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-wwii-1943',
+    title: 'Japanese War Map 1943',
+    subtitle: 'WWII Japanese aeronautical chart of Australia',
+    story: 'A 1943 Japanese Imperial military aeronautical chart of Australia, produced during the height of the Pacific War. In early 1942, Japanese forces had bombed Darwin, raided Broome and Exmouth, and landed in New Guinea. Australia genuinely feared invasion. This map \u2014 a planning document for a military that was studying the continent as potential conquest \u2014 shows Australia as it looked to Japanese strategic planners: the populated southeast coast, the thin ribbon of settlement along the north, the vast empty interior. The chart includes flight route markings and elevation data critical for aerial navigation. By 1943 the tide was turning at Kokoda and Guadalcanal, but the map captures the moment of maximum threat.',
+    palette: {
+      background: '#e8e0d0',
+      fill: ['#a09070'],
+      stroke: '#504030',
+      text: '#281808',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-wwii-1943-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_wwii_1943.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-wwii-1943-layer',
+        type: 'raster',
+        source: 'historical-wwii-1943-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-johnson-1861',
+    title: 'Johnson 1861',
+    subtitle: 'First edition Johnson atlas map',
+    story: 'The first edition of A. J. Johnson & Browning\u2019s map of Australia, published in New York in 1861 \u2014 the same year Robert O\u2019Hara Burke and William John Wills made their fatal attempt to cross the continent from south to north. This first edition plate shows Australia at the very moment of maximum exploration excitement: the interior was being penetrated for the first time, but most of it was still unknown. Queensland had just been separated from New South Wales in 1859. The plate was subsequently updated and revised through 1865 and beyond, but this original 1861 edition captures the raw, half-known continent before the telegraphs and railways began to tame it.',
+    palette: {
+      background: '#f0ece0',
+      fill: ['#c09878'],
+      stroke: '#6a4828',
+      text: '#32180a',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-johnson-1861-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_johnson_1861.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-johnson-1861-layer',
+        type: 'raster',
+        source: 'historical-johnson-1861-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-johnson-1870',
+    title: 'Johnson 1870',
+    subtitle: 'Australia & the East Indies',
+    story: 'A. J. Johnson\u2019s 1870 map of Australia, the East Indies, and Southeast Asia, placing the continent in its full regional context \u2014 the Dutch East Indies (present-day Indonesia) to the north, the Philippines and Southeast Asia beyond. By 1870 the overland telegraph line from Adelaide to Darwin was under construction; steam shipping had shrunk the world. The map\u2019s portrait orientation, taller than wide, is unusual for an atlas plate \u2014 a reflection of the vast north-south extent of the region from the Philippines down to Tasmania. The Queensland sugar and cattle industries were expanding rapidly; the great gold rushes of Victoria were winding down.',
+    palette: {
+      background: '#ece5d5',
+      fill: ['#b89060'],
+      stroke: '#6a4820',
+      text: '#301808',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-johnson-1870-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_johnson_1870.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-johnson-1870-layer',
+        type: 'raster',
+        source: 'historical-johnson-1870-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  {
+    id: 'historical-stanford-1880',
+    title: 'Stanford\u2019s Australasia c.1880',
+    subtitle: 'Victorian masterwork atlas map',
+    story: 'Stanford\u2019s Library Map of Australasia, published by Edward Stanford Ltd. of London in the 1880s, is one of the finest Victorian atlas maps of the region. Stanford was Queen Victoria\u2019s appointed cartographer and publisher of choice for serious geographical work; this map was the definitive English reference for Australasia throughout the late 19th century. It shows Australia and New Zealand in extraordinary detail: the railway lines of the colonial era, the telegraph network, the pastoral districts, the goldfields. Scanned at 20,000\u00d7 pixels wide, this is the highest-resolution historical map of Australia available on the atlas. The original print would have been roughly 60 cm wide.',
+    palette: {
+      background: '#f0ead8',
+      fill: ['#c8a870'],
+      stroke: '#7a5828',
+      text: '#3c2008',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-stanford-1880-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_stanford_1880.pmtiles`,
+          tileSize: 256,
+          maxzoom: 9,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-stanford-1880-layer',
+        type: 'raster',
+        source: 'historical-stanford-1880-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
   },
 
   // ── Base style showcase ────────────────────────────────────────

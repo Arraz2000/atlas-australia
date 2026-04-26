@@ -6,22 +6,25 @@ const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
 export const ATLAS_MAPS = [
   {
-    id: 'style-satellite',
-    title: 'Satellite',
-    subtitle: 'MapTiler — true colour imagery',
-    story: 'True-colour satellite imagery of Australia. Every pixel is real — captured from orbit and stitched into a seamless map. Zoom in to see individual paddocks, reefs, and urban grids from above.',
-    palette: { background: '#0a1628', fill: ['#1a3a5c'], stroke: '#4a8ab5', text: '#e0f0ff' },
-    noStateFills: true,
-    baseStyle: `https://api.maptiler.com/maps/satellite/style.json?key=${MT}`,
+    id: 'states',
+    title: 'States & Territories',
+    subtitle: 'The political map of Australia',
+    story: 'Australia is a federation of six states and two major territories, each with its own government and identity. This map shows the boundaries that divide the continent politically — six states declared at federation in 1901, and two territories carved out over the following decades.',
+    palette: {
+      background: '#0d1b2a',
+      fill: ['#1e4d8c','#2d6a9f','#c0392b','#16a085','#8e44ad','#d35400','#27ae60','#f39c12'],
+      stroke: '#ffffff',
+      text: '#e8f4f8',
+    },
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
     sources: [],
-    layers: [],
+    layers: [],  // state fill added dynamically from states.geojson
   },
   {
     id: 'protected-areas',
     title: 'Protected Australia',
     subtitle: 'National parks & protected areas',
     noStateFills: true,
-    initialZoom: 4.8,
     story: 'Over 22% of Australia\'s landmass is formally protected — a vast network of 14,575 national parks, nature reserves, conservation areas, and Indigenous Protected Areas. This map shows the full CAPAD 2024 dataset. Green tones indicate terrestrial protection; deeper green means stricter protection. Indigenous Protected Areas are shown in gold.',
     palette: {
       background: '#0f1a12',
@@ -85,21 +88,6 @@ export const ATLAS_MAPS = [
     ],
   },
   {
-    id: 'states',
-    title: 'States & Territories',
-    subtitle: 'The political map of Australia',
-    story: 'Australia is a federation of six states and two major territories, each with its own government and identity. This map shows the boundaries that divide the continent politically — six states declared at federation in 1901, and two territories carved out over the following decades.',
-    palette: {
-      background: '#0d1b2a',
-      fill: ['#1e4d8c','#2d6a9f','#c0392b','#16a085','#8e44ad','#d35400','#27ae60','#f39c12'],
-      stroke: '#ffffff',
-      text: '#e8f4f8',
-    },
-    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
-    sources: [],
-    layers: [],  // state fill added dynamically from states.geojson
-  },
-  {
     id: 'dark',
     title: 'The Dark Continent',
     subtitle: 'Australia at night',
@@ -152,6 +140,17 @@ export const ATLAS_MAPS = [
 
   // ── MapTiler styles ───────────────────────────────────────────
 
+  {
+    id: 'style-satellite',
+    title: 'Satellite',
+    subtitle: 'MapTiler — true colour imagery',
+    story: 'True-colour satellite imagery of Australia. Every pixel is real — captured from orbit and stitched into a seamless map. Zoom in to see individual paddocks, reefs, and urban grids from above.',
+    palette: { background: '#0a1628', fill: ['#1a3a5c'], stroke: '#4a8ab5', text: '#e0f0ff' },
+    noStateFills: true,
+    baseStyle: `https://api.maptiler.com/maps/satellite/style.json?key=${MT}`,
+    sources: [],
+    layers: [],
+  },
   {
     id: 'style-hybrid',
     title: 'Hybrid',

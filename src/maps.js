@@ -88,6 +88,43 @@ export const ATLAS_MAPS = [
     ],
   },
   {
+    id: 'black-summer',
+    title: 'Black Summer Fires',
+    subtitle: '2019–20 bushfire extent',
+    story: 'The Black Summer of 2019–20 was the most devastating bushfire season in recorded Australian history. Between July 2019 and June 2020, fires burnt approximately 18.6 million hectares — an area larger than England and Scotland combined. Over 3,000 homes were destroyed, 34 people killed directly, and an estimated 3 billion animals perished. This map shows the full national fire extent from the NIAFED dataset (DCCEEW).',
+    noStateFills: true,
+    initialZoom: 4.0,
+    palette: {
+      background: '#0d0800',
+      fill: ['#c0392b'],
+      stroke: '#ff6b35',
+      text: '#ffd4b8',
+    },
+    baseStyle: 'https://tiles.openfreemap.org/styles/dark',
+    sources: [
+      {
+        id: 'black-summer',
+        spec: { type: 'vector', url: `pmtiles://${R2}/blacksummer_fires.pmtiles` },
+      },
+    ],
+    layers: [
+      {
+        id: 'fires-fill',
+        type: 'fill',
+        source: 'black-summer',
+        'source-layer': 'fires',
+        paint: { 'fill-color': '#c0392b', 'fill-opacity': 0.65 },
+      },
+      {
+        id: 'fires-outline',
+        type: 'line',
+        source: 'black-summer',
+        'source-layer': 'fires',
+        paint: { 'line-color': '#ff6b35', 'line-width': 0.6, 'line-opacity': 0.7 },
+      },
+    ],
+  },
+  {
     id: 'dark',
     title: 'The Dark Continent',
     subtitle: 'Australia at night',

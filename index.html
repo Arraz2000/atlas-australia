@@ -409,7 +409,8 @@
       closeSelector();
 
       // Reset to default Australia view when switching maps
-      map.flyTo({ center: DEFAULT_VIEW.center, zoom: calcAustraliaZoom(), duration: 800 });
+      const zoom = mapDef.initialZoom || calcAustraliaZoom();
+      map.flyTo({ center: DEFAULT_VIEW.center, zoom, duration: 800 });
 
       // Switch base style then re-apply layers
       map.setStyle(mapDef.baseStyle);
@@ -443,6 +444,8 @@
       currentMapId = first.id;
       await applyMap(first);
       document.getElementById('selector-label').textContent = first.title;
+      // Apply initialZoom if defined (e.g. protected areas needs zoom ≥ 4)
+      if (first.initialZoom) map.setZoom(first.initialZoom);
     });
   </script>
 </body>

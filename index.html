@@ -113,6 +113,45 @@
       color: rgba(255,255,255,0.3); font-family: system-ui, sans-serif;
     }
 
+    /* Always scrollable dropdown (desktop: 20 items is long) */
+    #selector-list { max-height: 70vh; overflow-y: auto; }
+
+    /* ── Mobile layout ── */
+    @media (max-width: 640px) {
+      /* Selector → full-width bottom bar */
+      #selector {
+        top: auto; bottom: 8px;
+        right: 8px; left: 8px;
+        width: auto;
+      }
+      /* Dropdown opens upward */
+      #selector-list {
+        position: absolute;
+        bottom: calc(100% + 6px); top: auto;
+        left: 0; right: 0;
+        margin-top: 0;
+        max-height: 55vh;
+        -webkit-overflow-scrolling: touch;
+      }
+      /* Title sits above the selector bar */
+      #map-title { bottom: 68px; left: 12px; }
+      #map-title h1 { font-size: 1.4rem; }
+      #map-title h2 { font-size: 0.76rem; }
+      /* Wordmark tightens */
+      #wordmark { top: 12px; left: 12px; }
+      /* Legend panel — full available width */
+      #legend-panel {
+        top: 44px; left: 8px;
+        max-width: calc(100vw - 16px);
+        min-width: 0;
+      }
+      /* Scale/attribution controls clear the selector */
+      .maplibregl-ctrl-bottom-right { bottom: 56px !important; right: 8px !important; }
+      /* Bigger touch targets */
+      .map-option { padding: 14px 16px; }
+      .legend-item { padding: 8px 0; }
+    }
+
     /* Scale control override */
     .maplibregl-ctrl-scale {
       background: rgba(6,10,15,0.6) !important;
@@ -203,14 +242,17 @@
     let currentMapId = null;
     let statesGeoJSON = null;
 
-    // ── Zoom based on window height ───────────────────────────
-    // MapLibre uses 512px tiles. Australia spans ~-10° to -44° lat.
+    // ── Zoom based on window size ─────────────────────────────
+    // Fits Australia in both dimensions — important for portrait mobile.
     function calcAustraliaZoom() {
+      // Height-based: Australia ~-10° to -44° lat
       const toMercY = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
       const mercSpan = toMercY(-10) - toMercY(-44);
       const worldFraction = mercSpan / (2 * Math.PI);
-      const targetPx = window.innerHeight * 0.88;
-      return Math.log2(targetPx / (512 * worldFraction));
+      const zoomH = Math.log2((window.innerHeight * 0.88) / (512 * worldFraction));
+      // Width-based: Australia ~113° to 154.5°E = 41.5° lon span
+      const zoomW = Math.log2((window.innerWidth * 0.92) * 360 / (41.5 * 512));
+      return Math.min(zoomH, zoomW);
     }
 
     // ── Init map ──────────────────────────────────────────────

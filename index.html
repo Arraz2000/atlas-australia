@@ -156,6 +156,30 @@
     }
     .legend-item.off .legend-swatch { opacity: 0.2; }
     .legend-item.off .legend-label  { color: rgba(255,255,255,0.3); text-decoration: line-through; }
+
+    /* ── Fire year selector — bottom-left, above title ── */
+    #fire-year-selector {
+      position: fixed; bottom: 120px; left: 36px; z-index: 20;
+      display: none;
+    }
+    .fy-label {
+      font-family: system-ui, sans-serif; font-size: 0.65rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); margin-bottom: 8px;
+    }
+    #fy-buttons { display: flex; gap: 8px; flex-wrap: wrap; max-width: 340px; }
+    .fy-btn {
+      padding: 6px 14px;
+      background: rgba(6,10,15,0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      color: rgba(255,255,255,0.55);
+      font-family: system-ui, sans-serif; font-size: 0.73rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .fy-btn:hover { color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.35); }
+    .fy-btn.active { color: #fff; background: rgba(255,255,255,0.08); }
   </style>
 </head>
 <body>
@@ -185,6 +209,11 @@
     <div id="legend-items"></div>
     <button id="legend-story-btn" onclick="toggleStory()">About this map</button>
     <div id="legend-story-panel"></div>
+  </div>
+
+  <div id="fire-year-selector">
+    <div class="fy-label">Select fire season</div>
+    <div id="fy-buttons"></div>
   </div>
 
   <script type="module">
@@ -356,7 +385,43 @@
           }
         }
       }
+
+      // Handle fire year selector
+      const fyrSelector = document.getElementById('fire-year-selector');
+      const fyrButtons  = document.getElementById('fy-buttons');
+      if (mapDef.fireYears && mapDef.fireYears.length) {
+        fyrButtons.innerHTML = mapDef.fireYears.map(yr => `
+          <button class="fy-btn" data-year="${yr.id}" data-colour="${yr.colour}"
+            onclick="window._selectFireYear('${yr.id}')">
+            ${yr.label}
+          </button>
+        `).join('');
+        fyrSelector.style.display = 'block';
+        window._currentFireMap = mapDef;
+        window._selectFireYear(mapDef.fireYears[0].id);
+      } else {
+        fyrSelector.style.display = 'none';
+        window._currentFireMap = null;
+      }
     }
+
+    // ── Select fire year ──────────────────────────────────────
+    window._selectFireYear = function(yearId) {
+      const mapDef = window._currentFireMap;
+      if (!mapDef || !mapDef.fireYears) return;
+      mapDef.fireYears.forEach(yr => {
+        const vis = yr.id === yearId ? 'visible' : 'none';
+        [`fires-${yr.id}-fill`, `fires-${yr.id}-outline`].forEach(lid => {
+          if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', vis);
+        });
+      });
+      document.querySelectorAll('.fy-btn').forEach(btn => {
+        const active = btn.dataset.year === yearId;
+        btn.classList.toggle('active', active);
+        btn.style.borderColor = active ? btn.dataset.colour : '';
+        btn.style.color = active ? btn.dataset.colour : '';
+      });
+    };
 
     // ── Select map (called from HTML onclick) ─────────────────
     window._selectMap = function(id) {

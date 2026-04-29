@@ -463,6 +463,16 @@
       // Apply / clear CSS filter (e.g. invert for dark variants)
       map.getCanvas().style.filter = mapDef.cssFilter || '';
 
+      // Hide style layers matching any pattern in hideLayerPatterns
+      if (mapDef.hideLayerPatterns && mapDef.hideLayerPatterns.length) {
+        const patterns = mapDef.hideLayerPatterns.map(p => new RegExp(p, 'i'));
+        map.getStyle().layers.forEach(l => {
+          if (patterns.some(re => re.test(l.id))) {
+            map.setLayoutProperty(l.id, 'visibility', 'none');
+          }
+        });
+      }
+
       // Enable / disable 3D terrain
       if (mapDef.terrain) {
         if (!map.getSource('terrain-dem')) {

@@ -1117,7 +1117,8 @@ export const ATLAS_MAPS = [
     palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
     noStateFills: true,
     baseStyle: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`,
-    cssFilter: 'invert(100%) hue-rotate(180deg)',
+    cssFilter: 'invert(100%) hue-rotate(180deg) brightness(0.82) contrast(0.9)',
+    hideLayerPatterns: ['boundary', 'admin', 'border'],
     sources: [
       {
         id: 'rivers',
@@ -1141,7 +1142,7 @@ export const ATLAS_MAPS = [
             12, ['step', ['get', 'w'], 6.5, 0.001, 26.0, 0.05, 50.0],
             14, ['step', ['get', 'w'], 10.0, 0.001, 38.0, 0.05, 72.0],
           ],
-          'line-opacity': ['step', ['get', 'w'], 0.55, 0.001, 0.8, 0.05, 1.0],
+          'line-opacity': ['step', ['get', 'w'], 0.75, 0.001, 0.92, 0.05, 1.0],
         },
       },
     ],

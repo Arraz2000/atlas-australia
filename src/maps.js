@@ -1117,7 +1117,7 @@ export const ATLAS_MAPS = [
     palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
     noStateFills: true,
     baseStyle: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`,
-    cssFilter: 'invert(100%) hue-rotate(180deg) brightness(0.82) contrast(0.9)',
+    cssFilter: 'invert(100%) hue-rotate(180deg)',
     hideLayerPatterns: ['boundary', 'admin', 'border', 'coastline', 'outline'],
     sources: [
       {

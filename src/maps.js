@@ -1116,9 +1116,8 @@ export const ATLAS_MAPS = [
     story: 'Australia\'s river network mapped by drainage division — 13 basins coloured by watershed, with line weight scaled by upstream drainage area. Data from the Bureau of Meteorology Geofabric V3.3, showing 682,000 stream segments from the full SH_Network dataset.',
     palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
     noStateFills: true,
-    baseStyle: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`,
-    cssFilter: 'invert(100%) hue-rotate(180deg)',
-    hideLayerPatterns: ['boundary', 'admin', 'border', 'coastline', 'outline'],
+    baseStyle: { version: 8, glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MT}`, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] },
+    cssFilter: 'brightness(1.4) saturate(1.5)',
     sources: [
       {
         id: 'rivers',

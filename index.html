@@ -33,51 +33,104 @@
     /* ── Story panel (legacy — unused) ── */
     #story-panel { display: none; }
 
-    /* ── Map selector — top-right ── */
-    #selector {
-      position: fixed; top: 24px; right: 24px; z-index: 30;
-      width: 240px;
+    /* ── Sidebar map selector — left edge ── */
+    #sidebar {
+      position: fixed; top: 0; left: 0; height: 100vh; z-index: 40;
+      display: flex; align-items: stretch;
+      pointer-events: none;
     }
-    #selector-toggle {
-      width: 100%; padding: 10px 16px;
-      background: rgba(6,10,15,0.88);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 6px;
-      color: rgba(255,255,255,0.85); font-size: 0.78rem;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      cursor: pointer; text-align: left;
-      font-family: system-ui, sans-serif;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    #selector-toggle:hover { border-color: rgba(255,255,255,0.3); }
-    #selector-toggle .arrow { opacity: 0.5; transition: transform 0.2s; }
-    #selector-toggle.open .arrow { transform: rotate(180deg); }
 
-    #selector-list {
-      margin-top: 6px;
+    #sidebar-panel {
+      width: 260px;
+      background: rgba(6,10,15,0.92);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      transform: translateX(-260px);
+      transition: transform 0.25s ease;
+      overflow-y: auto;
+      pointer-events: all;
+      display: flex; flex-direction: column;
+    }
+    #sidebar.open #sidebar-panel { transform: translateX(0); }
+
+    #sidebar-tab {
+      position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+      z-index: 41;
+      writing-mode: vertical-rl; text-orientation: mixed;
       background: rgba(6,10,15,0.92);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px; overflow: hidden;
-      display: none;
+      border-left: none;
+      border-radius: 0 6px 6px 0;
+      padding: 14px 8px;
+      cursor: pointer; pointer-events: all;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      transition: left 0.25s ease, background 0.15s;
     }
-    #selector-list.open { display: block; }
+    #sidebar.open ~ #sidebar-tab { left: 260px; }
+    #sidebar-tab:hover { background: rgba(255,255,255,0.08); }
+    #sidebar-tab-label {
+      color: rgba(255,255,255,0.7); font-size: 0.68rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      font-family: system-ui, sans-serif;
+    }
+    #sidebar-tab-arrow {
+      color: rgba(255,255,255,0.4); font-size: 0.9rem;
+      transition: transform 0.25s ease;
+      display: inline-block;
+      transform: rotate(90deg);
+    }
+    #sidebar.open ~ #sidebar-tab #sidebar-tab-arrow { transform: rotate(-90deg); }
+
+    /* Sidebar overlay (closes on outside click) */
+    #sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 39;
+    }
+    #sidebar.open ~ #sidebar-overlay { display: block; }
+
+    /* Sidebar inner padding */
+    #sidebar-panel-inner { padding: 16px 0 24px; }
+
+    /* Accordion groups */
+    .sb-group { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sb-group-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; cursor: pointer;
+      transition: background 0.15s; user-select: none;
+    }
+    .sb-group-header:hover { background: rgba(255,255,255,0.05); }
+    .sb-group-icon { font-size: 1rem; flex-shrink: 0; }
+    .sb-group-label {
+      flex: 1; color: rgba(255,255,255,0.75); font-size: 0.74rem;
+      font-family: system-ui, sans-serif; letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .sb-group-chevron {
+      color: rgba(255,255,255,0.3); font-size: 0.7rem;
+      transition: transform 0.2s; flex-shrink: 0;
+    }
+    .sb-group.open .sb-group-chevron { transform: rotate(180deg); }
+
+    .sb-group-items { display: none; }
+    .sb-group.open .sb-group-items { display: block; }
 
     .map-option {
-      padding: 12px 16px; cursor: pointer;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 10px 16px 10px 42px; cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
       transition: background 0.15s;
     }
     .map-option:last-child { border-bottom: none; }
     .map-option:hover { background: rgba(255,255,255,0.06); }
-    .map-option.active { background: rgba(255,255,255,0.1); }
+    .map-option.active {
+      background: rgba(255,255,255,0.1);
+      box-shadow: inset 3px 0 0 rgba(255,255,255,0.4);
+    }
     .map-option .opt-title {
       color: rgba(255,255,255,0.9); font-size: 0.8rem;
-      font-family: system-ui, sans-serif; letter-spacing: 0.04em;
+      font-family: system-ui, sans-serif; letter-spacing: 0.03em;
     }
     .map-option .opt-sub {
-      color: rgba(255,255,255,0.38); font-size: 0.7rem;
+      color: rgba(255,255,255,0.38); font-size: 0.68rem;
       font-family: system-ui, sans-serif; margin-top: 2px;
     }
 
@@ -196,13 +249,16 @@
   <button id="story-btn" onclick="toggleStory()" style="display:none">About this map</button>
   <div id="story-panel"></div>
 
-  <div id="selector">
-    <button id="selector-toggle" onclick="toggleSelector()">
-      <span id="selector-label">Select a map</span>
-      <span class="arrow">▾</span>
-    </button>
-    <div id="selector-list"></div>
+  <div id="sidebar">
+    <div id="sidebar-panel">
+      <div id="sidebar-panel-inner"></div>
+    </div>
   </div>
+  <div id="sidebar-tab" onclick="toggleSidebar()">
+    <span id="sidebar-tab-label">Maps</span>
+    <span id="sidebar-tab-arrow">›</span>
+  </div>
+  <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
   <div id="legend-panel">
     <div class="legend-title">Layers</div>
@@ -271,15 +327,36 @@
       statesGeoJSON = await r.json();
     }
 
-    // ── Build selector list ───────────────────────────────────
-    function buildSelector() {
-      const list = document.getElementById('selector-list');
-      list.innerHTML = ATLAS_MAPS.map((m, i) => `
-        <div class="map-option${i===0?' active':''}" data-id="${m.id}" onclick="window._selectMap('${m.id}')">
-          <div class="opt-title">${m.title}</div>
-          <div class="opt-sub">${m.subtitle}</div>
-        </div>
-      `).join('');
+    // ── Build sidebar accordion ───────────────────────────────
+    const SIDEBAR_GROUPS = [
+      { key: 'base',        icon: '🗺️',  label: 'Base Styles' },
+      { key: 'historical',  icon: '📜',  label: 'Historical Maps' },
+      { key: 'disasters',   icon: '🔥',  label: 'Natural Disasters' },
+      { key: 'environment', icon: '🌿',  label: 'Environment & Land' },
+      { key: 'society',     icon: '🏛️',  label: 'Society & Data' },
+    ];
+
+    function buildSidebar() {
+      const inner = document.getElementById('sidebar-panel-inner');
+      inner.innerHTML = SIDEBAR_GROUPS.map(group => {
+        const maps = ATLAS_MAPS.filter(m => m.category === group.key);
+        const items = maps.map(m => `
+          <div class="map-option" data-id="${m.id}" onclick="window._selectMap('${m.id}')">
+            <div class="opt-title">${m.title}</div>
+            <div class="opt-sub">${m.subtitle}</div>
+          </div>
+        `).join('');
+        return `
+          <div class="sb-group" data-group="${group.key}">
+            <div class="sb-group-header" onclick="toggleGroup('${group.key}')">
+              <span class="sb-group-icon">${group.icon}</span>
+              <span class="sb-group-label">${group.label}</span>
+              <span class="sb-group-chevron">▾</span>
+            </div>
+            <div class="sb-group-items">${items}</div>
+          </div>
+        `;
+      }).join('');
     }
 
     // ── Apply a map ───────────────────────────────────────────
@@ -288,7 +365,6 @@
       document.getElementById('title-main').textContent = mapDef.title;
       document.getElementById('title-sub').textContent = mapDef.subtitle;
       document.getElementById('legend-story-panel').textContent = mapDef.story;
-      document.getElementById('selector-label').textContent = mapDef.title;
 
       // Update legend
       const legendPanel = document.getElementById('legend-panel');
@@ -315,10 +391,8 @@
         legendItems.innerHTML = '';
       }
 
-      // Mark active in list
-      document.querySelectorAll('.map-option').forEach(el => {
-        el.classList.toggle('active', el.dataset.id === mapDef.id);
-      });
+      // Mark active in sidebar
+      updateSidebarActive(mapDef.id);
 
       // Add state fill layer (unless map opts out with noStateFills)
       if (statesGeoJSON && !mapDef.noStateFills) {
@@ -386,6 +460,31 @@
         }
       }
 
+      // Enable / disable 3D terrain
+      if (mapDef.terrain) {
+        if (!map.getSource('terrain-dem')) {
+          map.addSource('terrain-dem', {
+            type: 'raster-dem',
+            url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${MT}`,
+            tileSize: 256,
+          });
+        }
+        map.setTerrain({ source: 'terrain-dem', exaggeration: 1.5 });
+        if (!map.getLayer('sky')) {
+          map.addLayer({
+            id: 'sky',
+            type: 'sky',
+            paint: {
+              'sky-type': 'atmosphere',
+              'sky-atmosphere-sun': [0.0, 90.0],
+              'sky-atmosphere-sun-intensity': 15,
+            },
+          });
+        }
+      } else {
+        map.setTerrain(null);
+      }
+
       // Handle event selector (fires, floods, etc.)
       const evtSelector = document.getElementById('event-selector');
       const evtLabel    = document.getElementById('event-selector-label');
@@ -429,11 +528,11 @@
 
     // ── Select map (called from HTML onclick) ─────────────────
     window._selectMap = function(id) {
-      if (id === currentMapId) { closeSelector(); return; }
+      if (id === currentMapId) { closeSidebar(); return; }
       const mapDef = ATLAS_MAPS.find(m => m.id === id);
       if (!mapDef) return;
       currentMapId = id;
-      closeSelector();
+      closeSidebar();
 
       // Reset to default Australia view when switching maps, or map's custom view
       const center = mapDef.initialCenter || DEFAULT_VIEW.center;
@@ -445,16 +544,27 @@
       map.once('styledata', () => applyMap(mapDef));
     };
 
-    // ── Selector open/close ───────────────────────────────────
-    window.toggleSelector = function() {
-      const list = document.getElementById('selector-list');
-      const btn  = document.getElementById('selector-toggle');
-      list.classList.toggle('open');
-      btn.classList.toggle('open');
+    // ── Sidebar open/close/toggle ─────────────────────────────
+    window.toggleSidebar = function() {
+      document.getElementById('sidebar').classList.toggle('open');
     };
-    function closeSelector() {
-      document.getElementById('selector-list').classList.remove('open');
-      document.getElementById('selector-toggle').classList.remove('open');
+    window.closeSidebar = function() {
+      document.getElementById('sidebar').classList.remove('open');
+    };
+    window.toggleGroup = function(key) {
+      const group = document.querySelector(`.sb-group[data-group="${key}"]`);
+      if (group) group.classList.toggle('open');
+    };
+    function updateSidebarActive(id) {
+      document.querySelectorAll('.map-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === id);
+      });
+      // Auto-expand the group containing the active map
+      const activeEl = document.querySelector(`.map-option[data-id="${id}"]`);
+      if (activeEl) {
+        const group = activeEl.closest('.sb-group');
+        if (group) group.classList.add('open');
+      }
     }
 
     // ── Story panel ───────────────────────────────────────────
@@ -466,12 +576,11 @@
     // ── Bootstrap ─────────────────────────────────────────────
     map.on('load', async () => {
       await loadStates();
-      buildSelector();
+      buildSidebar();
       // Load first map
       const first = ATLAS_MAPS[0];
       currentMapId = first.id;
       await applyMap(first);
-      document.getElementById('selector-label').textContent = first.title;
     });
   </script>
 </body>

@@ -7,6 +7,7 @@ const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 export const ATLAS_MAPS = [
   {
     id: 'states',
+    category: 'base',
     title: 'States & Territories',
     subtitle: 'The political map of Australia',
     story: 'Australia is a federation of six states and two major territories, each with its own government and identity. This map shows the boundaries that divide the continent politically — six states declared at federation in 1901, and two territories carved out over the following decades.',
@@ -22,6 +23,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'protected-areas',
+    category: 'environment',
     title: 'Protected Australia',
     subtitle: 'National parks & protected areas',
     noStateFills: true,
@@ -89,6 +91,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'australian-fires',
+    category: 'disasters',
     title: 'Australian Bushfires',
     subtitle: 'Major fire seasons from 1974 to 2020',
     story: 'Australia has experienced some of the world\'s most devastating wildfires. The 2019–20 Black Summer burnt 18.6 million hectares and killed an estimated 3 billion animals. The 2009 Black Saturday fires killed 173 people in Victoria in a single day. The 1983 Ash Wednesday fires swept through Victoria and South Australia on February 16, killing 75 people. The 2002 WA season was one of the largest in Western Australian history, burning across the Kimberley and Pilbara. The 1974–75 data coverage is limited to southern states — the famous central Australian extent is not captured in available datasets.',
@@ -144,6 +147,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'electoral',
+    category: 'society',
     title: 'Federal Electoral Divisions',
     subtitle: '2022 election results by seat',
     story: 'Australia\'s 150 federal electoral divisions, coloured by the party that won each seat at the May 2022 federal election. Labor (red) won 77 seats to form government under Anthony Albanese. The Coalition (blue) held 58 seats. The Greens (green) won 4 seats. Independents and minor parties (brown) won 11 seats — the largest crossbench in Australian history, driven by the "Teal Independents" in inner-city Liberal heartland. Boundaries are the March 2025 redistribution.',
@@ -183,6 +187,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'renewables',
+    category: 'society',
     title: 'Renewable Energy',
     subtitle: 'Solar and wind farms across Australia',
     story: 'Australia\'s renewable energy build-out mapped from OpenStreetMap. Solar farms (yellow) and wind farms (blue) represent the physical footprints of utility-scale generation — from the massive solar precincts of inland NSW and QLD to the wind corridors of southern Victoria and South Australia. Australia generated over 35% of its electricity from renewables in 2023, with solar capacity doubling every few years. The concentration of solar in the sunbelt and wind along the southern coast reflects both resource availability and grid connection constraints.',
@@ -218,6 +223,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'mines',
+    category: 'society',
     title: 'Mines & Quarries',
     subtitle: 'Active and historic mining operations',
     story: 'Australia is one of the world\'s great mining nations — the largest exporter of iron ore, lithium, coal, and gold. This map shows over 38,000 mine sites and quarries mapped in OpenStreetMap, from the vast open-cut iron ore pits of the Pilbara to gold mines across the goldfields of WA and Victoria, coal mines in the Hunter Valley and Queensland, and quarries scattered across every state. The sheer density of mining tenements in the Pilbara and Queensland\'s resource corridor tells the story of Australia\'s economic backbone.',
@@ -250,6 +256,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'population',
+    category: 'society',
     title: 'Population Density',
     subtitle: '2021 Census — people per km²',
     story: 'Australia is one of the world\'s least densely populated countries — 26 million people spread across 7.7 million km², with the vast majority hugging the coastline. This map shows population density by Statistical Area Level 2 (SA2) from the 2021 ABS Census. The concentration in Sydney, Melbourne, Brisbane, Perth and Adelaide is stark: 80% of Australians live within 50km of the coast. The outback interior, which covers 70% of the country\'s land area, holds less than 5% of the population. Colour scale is logarithmic — each band represents a 10× increase in density.',
@@ -295,6 +302,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'land-access',
+    category: 'environment',
     title: 'Land Access',
     subtitle: 'Protected, forest, farmland & urban — who owns Australia',
     story: 'Land access across Australia mapped from OpenStreetMap — where community contributors have tagged land use, tenure, and access. Protected areas (national parks, reserves, conservation areas) are shown in dark green. Publicly accessible forests and crown land in mid-green. Farmland and pastoral areas in tan. Urban and built-up areas in orange. Coverage is excellent in populated regions — zoom in to see individual streets and parcels. Remote and rural areas may be sparse where OSM contributors haven\'t yet mapped land tenure. Data is community-maintained and does not represent legal tenure boundaries.',
@@ -358,6 +366,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'mtb-trails',
+    category: 'society',
     title: 'Mountain Bike Trails',
     subtitle: 'Every mapped MTB trail in Australia',
     story: 'Over 10,600 mountain bike trail segments mapped across Australia from OpenStreetMap. Trails are coloured by the international MTB difficulty scale: green for beginner (scale 0–1), blue for intermediate (scale 2), black for difficult (scale 3), and red for expert and extreme (scale 4–6). Major trail networks include Stromlo (ACT), Derby (TAS), Oakridge (VIC), Bright (VIC), Maydena (TAS), Majura (ACT), Goat Hill (NSW), and many more. Data is community-maintained — coverage is excellent in popular areas, patchy in remote locations.',
@@ -444,6 +453,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'australian-floods',
+    category: 'disasters',
     title: 'Australian Floods',
     subtitle: 'Significant flood events from 1974 to 2022',
     story: 'Flooding is Australia\'s costliest natural hazard. The 2022 South-East Queensland floods inundated large parts of Greater Brisbane in February and March, killing 13 people. The 2011 Queensland floods were the most catastrophic in the state\'s modern history — affecting 75 towns, displacing 200,000 people, and costing $2.4 billion. The 1974 Brisbane River flood remains the benchmark: still the highest recorded flood in Brisbane history, peaking at 6.6 metres at the Brisbane City Gauge. Data covers South-East Queensland only — a national flood extent dataset equivalent to the GA fire mapping does not yet exist.',
@@ -488,6 +498,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'dark',
+    category: 'base',
     title: 'The Dark Continent',
     subtitle: 'Australia at night',
     story: 'A dark canvas reveals the shape of the continent stripped of detail — just coastline, landmass, and silence.',
@@ -506,6 +517,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-arrowsmith-1844',
+    category: 'historical',
     title: 'Arrowsmith 1844',
     subtitle: 'Colonial survey of Australia',
     story: 'John Arrowsmith\u2019s 1844 map of Australia \u2014 drawn in London from the surveys of Matthew Flinders, Nicolas Baudin, and the British Admiralty. It captures the continent as British colonists understood it: the settled coasts mapped in meticulous detail, the interior almost entirely blank. Only five years since the first overland crossing of southern Australia by Edward John Eyre. Perth, Adelaide, Melbourne, Sydney, and Hobart are marked; Darwin, Alice Springs, and most of Queensland do not yet exist. The map is a portrait of a continent still being written.',
@@ -540,6 +552,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-thomson-1814',
+    category: 'historical',
     title: 'Thomson 1814',
     subtitle: 'First map named \u201cAustralia\u201d',
     story: 'John Thomson\u2019s 1814 map of Australia, New Zealand and New Guinea was among the first major English atlases to adopt Matthew Flinders\u2019 proposed name \u201cAustralia\u201d for the continent. Published in Edinburgh the same year Flinders\u2019 own \u201cA Voyage to Terra Australis\u201d appeared, Thomson\u2019s map captured the continent at the dawn of its naming \u2014 the coastline traced from naval surveys, the interior a speculation. New South Wales was the only significant colony; the sites of Melbourne, Adelaide, and Perth were uninhabited. Tasmania was called Van Diemen\u2019s Land. New Guinea appeared hazily to the north. A document of what was known, and how much was not.',
@@ -574,6 +587,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-pinkerton-1818',
+    category: 'historical',
     title: 'Pinkerton 1818',
     subtitle: 'Post-Flinders survey of Australasia',
     story: 'John Pinkerton\u2019s 1818 map of Australia and New Zealand, published in his acclaimed \u201cModern Atlas\u201d in London. Just four years after Matthew Flinders completed the first circumnavigation of Australia, Pinkerton incorporated the resulting surveys into one of the first detailed maps to show the continent under its new name. The coastline is now mostly accurate \u2014 Flinders\u2019 painstaking work along the Great Australian Bight, the Gulf of Carpentaria, and the south coast is visible in the detail. The interior remains blank. New Zealand appears to the east, still largely unknown to European science. A transitional map \u2014 the era of guesswork ending, the era of inland exploration yet to begin.',
@@ -584,7 +598,7 @@ export const ATLAS_MAPS = [
       text: '#2e1e08',
     },
     noStateFills: true,
-    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    baseStyle: `https://api.maptiler.com/maps/landscape/style.json?key=${MT}`,
     sources: [
       {
         id: 'historical-pinkerton-1818-src',
@@ -608,6 +622,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-tallis-1851',
+    category: 'historical',
     title: 'Tallis 1851',
     subtitle: 'Victorian ornamental map of Australia',
     story: 'John Tallis & Company\u2019s 1851 \u201cExploration Map of Australia\u201d is one of the great showpieces of Victorian cartography. Published during the gold rush era, it frames the continent in elaborate engraved panels depicting Aboriginal Australians, colonial scenes, native fauna, and portraits of explorers. The interior is still largely blank \u2014 Ludwig Leichhardt and Charles Sturt had pushed inland, but Burke and Wills were still a decade away. The coastline is now precisely drawn. Inset maps show King George\u2019s Sound, Port Jackson, and Spencer Gulf in detail. Gold had just been discovered in New South Wales; within months of publication, Victoria would become the richest place on earth.',
@@ -642,6 +657,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-johnson-1862',
+    category: 'historical',
     title: 'Johnson 1862',
     subtitle: 'American atlas map of Australia',
     story: 'A. J. Johnson\u2019s 1862 map of Australia, published in New York at the height of the American Civil War. By 1862 the interior of Australia was no longer entirely blank \u2014 Robert Burke and William Wills had crossed the continent from south to north the previous year (and died returning). Stuart\u2019s successful crossing followed in 1862 itself. Johnson\u2019s map was already out of date the moment it was printed: it shows the vast interior still labelled as desert and unexplored wilderness. Queensland had just been declared a separate colony. The goldfields of Victoria were producing staggering wealth. A continent being rapidly known, and rapidly transformed.',
@@ -676,6 +692,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-mitchell-1864',
+    category: 'historical',
     title: 'Mitchell 1864',
     subtitle: 'Philadelphia atlas map of Australasia',
     story: 'Samuel Augustus Mitchell Jr.\u2019s 1864 map of Australia and Polynesia, published in Philadelphia during the American Civil War. Mitchell was one of America\u2019s most prolific commercial cartographers, and his atlas maps reached enormous print runs. This plate shows Australia alongside the Pacific \u2014 New Zealand, Fiji, and the islands of Melanesia and Micronesia charted in varying degrees of accuracy. The Australian interior now shows overland explorer routes: the tracks of Burke, Wills, and Stuart are dimly present. The telegraph line from Adelaide to Darwin \u2014 which would connect Australia to the world in 1872 \u2014 was still years away.',
@@ -710,6 +727,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-stieler-1876',
+    category: 'historical',
     title: 'Stieler 1876',
     subtitle: 'Perthes atlas: southeastern Australia',
     story: 'Adolf Stieler\u2019s 1876 map of Southeastern Australia, published by Justus Perthes in Gotha \u2014 the most respected cartographic house in 19th-century Europe. The Perthes/Stieler atlases were celebrated for their scientific precision, and this map shows it: the Murray-Darling river system is drawn with exceptional accuracy, the goldfields of Victoria are marked, and the colonies of New South Wales, Victoria, and South Australia are clearly delineated. Tasmania (Van Diemen\u2019s Land until 1856) appears in the south. The year 1876 was the midpoint of the colonial era \u2014 Queensland was booming, inland settlement was pushing into the Riverina, and the age of the great pastoral runs was at its peak.',
@@ -744,6 +762,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-wwii-1943',
+    category: 'historical',
     title: 'Japanese War Map 1943',
     subtitle: 'WWII Japanese aeronautical chart of Australia',
     story: 'A 1943 Japanese Imperial military aeronautical chart of Australia, produced during the height of the Pacific War. In early 1942, Japanese forces had bombed Darwin, raided Broome and Exmouth, and landed in New Guinea. Australia genuinely feared invasion. This map \u2014 a planning document for a military that was studying the continent as potential conquest \u2014 shows Australia as it looked to Japanese strategic planners: the populated southeast coast, the thin ribbon of settlement along the north, the vast empty interior. The chart includes flight route markings and elevation data critical for aerial navigation. By 1943 the tide was turning at Kokoda and Guadalcanal, but the map captures the moment of maximum threat.',
@@ -778,6 +797,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-johnson-1861',
+    category: 'historical',
     title: 'Johnson 1861',
     subtitle: 'First edition Johnson atlas map',
     story: 'The first edition of A. J. Johnson & Browning\u2019s map of Australia, published in New York in 1861 \u2014 the same year Robert O\u2019Hara Burke and William John Wills made their fatal attempt to cross the continent from south to north. This first edition plate shows Australia at the very moment of maximum exploration excitement: the interior was being penetrated for the first time, but most of it was still unknown. Queensland had just been separated from New South Wales in 1859. The plate was subsequently updated and revised through 1865 and beyond, but this original 1861 edition captures the raw, half-known continent before the telegraphs and railways began to tame it.',
@@ -812,6 +832,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-johnson-1870',
+    category: 'historical',
     title: 'Johnson 1870',
     subtitle: 'Australia & the East Indies',
     story: 'A. J. Johnson\u2019s 1870 map of Australia, the East Indies, and Southeast Asia, placing the continent in its full regional context \u2014 the Dutch East Indies (present-day Indonesia) to the north, the Philippines and Southeast Asia beyond. By 1870 the overland telegraph line from Adelaide to Darwin was under construction; steam shipping had shrunk the world. The map\u2019s portrait orientation, taller than wide, is unusual for an atlas plate \u2014 a reflection of the vast north-south extent of the region from the Philippines down to Tasmania. The Queensland sugar and cattle industries were expanding rapidly; the great gold rushes of Victoria were winding down.',
@@ -846,6 +867,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'historical-stanford-1880',
+    category: 'historical',
     title: 'Stanford\u2019s Australasia c.1880',
     subtitle: 'Victorian masterwork atlas map',
     story: 'Stanford\u2019s Library Map of Australasia, published by Edward Stanford Ltd. of London in the 1880s, is one of the finest Victorian atlas maps of the region. Stanford was Queen Victoria\u2019s appointed cartographer and publisher of choice for serious geographical work; this map was the definitive English reference for Australasia throughout the late 19th century. It shows Australia and New Zealand in extraordinary detail: the railway lines of the colonial era, the telegraph network, the pastoral districts, the goldfields. Scanned at 20,000\u00d7 pixels wide, this is the highest-resolution historical map of Australia available on the atlas. The original print would have been roughly 60 cm wide.',
@@ -882,6 +904,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'style-liberty',
+    category: 'base',
     title: 'Liberty',
     subtitle: 'OpenFreeMap — colourful detail',
     story: 'Liberty is OpenFreeMap\'s full-colour style — rich detail, warm tones, and classic OpenStreetMap character. Roads, parks, water, and land use are all colour-coded. A great general-purpose base for data overlays.',
@@ -898,6 +921,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-bright',
+    category: 'base',
     title: 'Bright',
     subtitle: 'OpenFreeMap — bold contrast',
     story: 'Bright uses bold, high-contrast colours with strong outlines. Roads pop, water is vivid blue, and land use is clearly delineated. Designed for readability at all zoom levels.',
@@ -917,6 +941,7 @@ export const ATLAS_MAPS = [
 
   {
     id: 'style-satellite',
+    category: 'base',
     title: 'Satellite',
     subtitle: 'MapTiler — true colour imagery',
     story: 'True-colour satellite imagery of Australia. Every pixel is real — captured from orbit and stitched into a seamless map. Zoom in to see individual paddocks, reefs, and urban grids from above.',
@@ -928,6 +953,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-hybrid',
+    category: 'base',
     title: 'Hybrid',
     subtitle: 'MapTiler — satellite with labels',
     story: 'Satellite imagery overlaid with road networks, place names, and boundaries. The best of both worlds — real-world detail with navigational context.',
@@ -939,6 +965,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-topo',
+    category: 'base',
     title: 'Topographic',
     subtitle: 'MapTiler — elevation & terrain',
     story: 'Topographic contours reveal Australia\'s hidden relief — the vast flat interior, the Great Dividing Range, the dramatic gorges of the Kimberley and Flinders Ranges. Land that looks flat on a standard map tells a different story in topo.',
@@ -950,6 +977,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-outdoor',
+    category: 'base',
     title: 'Outdoor',
     subtitle: 'MapTiler — hiking & nature',
     story: 'Designed for the outdoors — hiking trails, national park boundaries, elevation shading, and natural features take centre stage. The map that walkers, climbers, and adventurers reach for.',
@@ -961,6 +989,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-aquarelle',
+    category: 'base',
     title: 'Aquarelle',
     subtitle: 'MapTiler — watercolour',
     story: 'Australia rendered as a watercolour painting — soft washes of colour, hand-drawn character, and an artistic warmth that no digital map usually captures. A style unlike any other.',
@@ -972,6 +1001,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-ocean',
+    category: 'base',
     title: 'Ocean',
     subtitle: 'MapTiler — maritime focus',
     story: 'A nautical-inspired style that brings Australia\'s vast ocean territory into focus. The seas, bays, straits, and reefs surrounding the continent are given equal weight to the land.',
@@ -983,6 +1013,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-winter',
+    category: 'base',
     title: 'Winter',
     subtitle: 'MapTiler — cool & crisp',
     story: 'A cool, wintry palette — muted blues, soft whites, and crisp outlines. A style that makes the Australian continent feel otherworldly and serene.',
@@ -994,6 +1025,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-toner',
+    category: 'base',
     title: 'Toner',
     subtitle: 'MapTiler — black & white',
     story: 'Stark black and white — every road, river, and coastline reduced to pure ink on paper. A classic newspaper cartography style that strips the map to its bare geometry.',
@@ -1005,6 +1037,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-landscape',
+    category: 'base',
     title: 'Landscape',
     subtitle: 'MapTiler — natural terrain',
     story: 'Natural colour terrain shading — green lowlands, brown highlands, grey mountains. Australia\'s geography rendered the way physical geography textbooks used to draw it.',
@@ -1016,6 +1049,7 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-dataviz',
+    category: 'base',
     title: 'Dataviz',
     subtitle: 'MapTiler — clean data canvas',
     story: 'Designed as a neutral backdrop for data overlays — minimal colour, subdued geography, maximum contrast for your data layers. The cartographer\'s equivalent of graph paper.',
@@ -1027,12 +1061,51 @@ export const ATLAS_MAPS = [
   },
   {
     id: 'style-dataviz-dark',
+    category: 'base',
     title: 'Dataviz Dark',
     subtitle: 'MapTiler — dark data canvas',
     story: 'The dark edition of the data visualisation canvas — a near-black base that makes bright data overlays pop with maximum contrast. Ideal for density maps, heat maps, and night-mode dashboards.',
     palette: { background: '#0a1020', fill: ['#1a2535'], stroke: '#2a4a5a', text: '#c0d8e8' },
     noStateFills: true,
     baseStyle: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${MT}`,
+    sources: [],
+    layers: [],
+  },
+  {
+    id: 'backdrop',
+    category: 'base',
+    title: 'Backdrop',
+    subtitle: 'MapTiler — detailed reference map',
+    story: 'Backdrop is a clean, detailed reference basemap from MapTiler — designed to support data overlays without competing with them. It combines clear topography, road networks, and place labels on a neutral canvas.',
+    palette: { background: '#e8e0d8', fill: ['#d4cfc8'], stroke: '#a09890', text: '#3a3530' },
+    noStateFills: true,
+    baseStyle: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`,
+    sources: [],
+    layers: [],
+  },
+  {
+    id: 'topo',
+    category: 'base',
+    title: 'Topo',
+    subtitle: 'MapTiler — topographic map',
+    story: 'A classic topographic basemap showing elevation contours, terrain shading, waterways, and land cover. Great for understanding the physical landscape of Australia — from the Great Dividing Range to the flat expanse of the interior.',
+    palette: { background: '#f0ede5', fill: ['#e8e0d0'], stroke: '#8a7a60', text: '#3a3020' },
+    noStateFills: true,
+    baseStyle: `https://api.maptiler.com/maps/topo/style.json?key=${MT}`,
+    sources: [],
+    layers: [],
+  },
+  {
+    id: 'terrain-3d',
+    category: 'base',
+    title: '3D Terrain',
+    subtitle: 'Interactive elevation — tilt & rotate',
+    story: 'Real 3D terrain powered by MapTiler\'s elevation model. Tilt the map with right-click drag (or two-finger drag on trackpad) to explore Australia\'s topography in three dimensions — from the rugged Great Dividing Range to the vast flat interior of the continent.',
+    palette: { background: '#c8d8e8', fill: ['#e0ead0'], stroke: '#8a9a80', text: '#2a3020' },
+    noStateFills: true,
+    terrain: true,
+    initialZoom: 5.0,
+    baseStyle: `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${MT}`,
     sources: [],
     layers: [],
   },

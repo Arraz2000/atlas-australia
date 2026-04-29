@@ -539,8 +539,58 @@
       });
     };
 
+    // ── Style colour transform (invert + dark curves) ─────────
+    function _curve(v, gamma, maxOut) {
+      return Math.round(maxOut * Math.pow(v / 255, gamma));
+    }
+    function _transformColour(str, gamma, maxOut) {
+      if (!str || typeof str !== 'string') return str;
+      str = str.trim();
+      const hexMatch = str.match(/^#([0-9a-f]{3,8})$/i);
+      if (hexMatch) {
+        let h = hexMatch[1];
+        if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        if (h.length < 6) return str;
+        const r = 255 - parseInt(h.substr(0,2),16);
+        const g = 255 - parseInt(h.substr(2,2),16);
+        const b = 255 - parseInt(h.substr(4,2),16);
+        const nr = _curve(r, gamma, maxOut);
+        const ng = _curve(g, gamma, maxOut);
+        const nb = _curve(b, gamma, maxOut);
+        return `#${nr.toString(16).padStart(2,'0')}${ng.toString(16).padStart(2,'0')}${nb.toString(16).padStart(2,'0')}`;
+      }
+      const rgbMatch = str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+      if (rgbMatch) {
+        const nr = _curve(255 - +rgbMatch[1], gamma, maxOut);
+        const ng = _curve(255 - +rgbMatch[2], gamma, maxOut);
+        const nb = _curve(255 - +rgbMatch[3], gamma, maxOut);
+        const aMatch = str.match(/,\s*([\d.]+)\s*\)$/);
+        return aMatch ? `rgba(${nr},${ng},${nb},${aMatch[1]})` : `rgb(${nr},${ng},${nb})`;
+      }
+      return str;
+    }
+    function _walkStyleColours(obj, key, gamma, maxOut) {
+      if (!obj) return obj;
+      if (typeof obj === 'string') {
+        const colourKeys = ['color','colour','background-color','fill-color','line-color','text-color','icon-color','halo-color','circle-color'];
+        return (key && colourKeys.some(k => key.endsWith(k))) ? _transformColour(obj, gamma, maxOut) : obj;
+      }
+      if (Array.isArray(obj)) return obj.map((v,i) => _walkStyleColours(v, key, gamma, maxOut));
+      if (typeof obj === 'object') {
+        const out = {};
+        for (const k in obj) out[k] = _walkStyleColours(obj[k], k, gamma, maxOut);
+        return out;
+      }
+      return obj;
+    }
+    async function _fetchTransformedStyle(url, gamma, maxOut) {
+      const resp = await fetch(url);
+      const style = await resp.json();
+      return _walkStyleColours(style, null, gamma, maxOut);
+    }
+
     // ── Select map (called from HTML onclick) ─────────────────
-    window._selectMap = function(id) {
+    window._selectMap = async function(id) {
       if (id === currentMapId) { closeSidebar(); return; }
       const mapDef = ATLAS_MAPS.find(m => m.id === id);
       if (!mapDef) return;
@@ -553,7 +603,12 @@
       map.flyTo({ center, zoom, duration: 800 });
 
       // Switch base style then re-apply layers
-      map.setStyle(mapDef.baseStyle);
+      let style = mapDef.baseStyle;
+      if (mapDef.baseStyleFetch) {
+        const { url, gamma = 2.6, maxOut = 70 } = mapDef.baseStyleFetch;
+        style = await _fetchTransformedStyle(url, gamma, maxOut);
+      }
+      map.setStyle(style);
       map.once('styledata', () => applyMap(mapDef));
     };
 

@@ -1096,6 +1096,44 @@ export const ATLAS_MAPS = [
     layers: [],
   },
   {
+    id: 'rivers',
+    category: 'environment',
+    title: 'River Basins',
+    subtitle: 'Drainage divisions & waterways',
+    story: 'Australia\'s river network mapped by drainage division — 13 basins coloured by watershed, with line weight scaled by upstream drainage area. Data from the Bureau of Meteorology Geofabric V3.3, showing 682,000 stream segments from the full SH_Network dataset.',
+    palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
+    noStateFills: true,
+    baseStyle: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`,
+    sources: [
+      {
+        id: 'rivers',
+        spec: { type: 'vector', url: `pmtiles://${R2}/rivers.pmtiles` },
+      },
+    ],
+    layers: [
+      {
+        id: 'rivers-lines',
+        type: 'line',
+        source: 'rivers',
+        'source-layer': 'rivers',
+        paint: {
+          'line-color': ['get', 'colour'],
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            3, ['interpolate', ['linear'], ['get', 'w'], 0, 0.3, 1, 1.5],
+            8, ['interpolate', ['linear'], ['get', 'w'], 0, 0.5, 1, 3.5],
+            12, ['interpolate', ['linear'], ['get', 'w'], 0, 1.0, 1, 6.0],
+          ],
+          'line-opacity': [
+            'interpolate', ['linear'], ['get', 'w'],
+            0, 0.5,
+            1, 0.95,
+          ],
+        },
+      },
+    ],
+  },
+  {
     id: 'terrain-3d',
     category: 'base',
     title: '3D Terrain',

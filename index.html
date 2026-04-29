@@ -460,6 +460,9 @@
         }
       }
 
+      // Apply / clear CSS filter (e.g. invert for dark variants)
+      map.getCanvas().style.filter = mapDef.cssFilter || '';
+
       // Enable / disable 3D terrain
       if (mapDef.terrain) {
         if (!map.getSource('terrain-dem')) {

@@ -1117,7 +1117,7 @@ export const ATLAS_MAPS = [
     palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
     noStateFills: true,
     baseStyle: { version: 8, glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MT}`, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] },
-    baseStyleFetch: { url: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`, gamma: 2.6, maxOut: 70 },
+    baseStyleFetch: { url: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`, gamma: 2.0, maxOut: 110 },
     cssFilter: 'brightness(0.85) saturate(0.8)',
     sources: [
       {

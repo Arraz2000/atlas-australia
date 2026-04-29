@@ -543,31 +543,45 @@
     function _curve(v, gamma, maxOut) {
       return Math.round(maxOut * Math.pow(v / 255, gamma));
     }
+    function _hslToRgb(h, s, l) {
+      s /= 100; l /= 100;
+      if (s === 0) { const v = Math.round(l*255); return [v,v,v]; }
+      const q = l < 0.5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+      const hue = t => {
+        t = ((t % 1) + 1) % 1;
+        if (t < 1/6) return p+(q-p)*6*t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p+(q-p)*(2/3-t)*6;
+        return p;
+      };
+      h /= 360;
+      return [Math.round(hue(h+1/3)*255), Math.round(hue(h)*255), Math.round(hue(h-1/3)*255)];
+    }
     function _transformColour(str, gamma, maxOut) {
       if (!str || typeof str !== 'string') return str;
       str = str.trim();
+      let r, g, b;
       const hexMatch = str.match(/^#([0-9a-f]{3,8})$/i);
       if (hexMatch) {
         let h = hexMatch[1];
         if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
         if (h.length < 6) return str;
-        const r = 255 - parseInt(h.substr(0,2),16);
-        const g = 255 - parseInt(h.substr(2,2),16);
-        const b = 255 - parseInt(h.substr(4,2),16);
-        const nr = _curve(r, gamma, maxOut);
-        const ng = _curve(g, gamma, maxOut);
-        const nb = _curve(b, gamma, maxOut);
-        return `#${nr.toString(16).padStart(2,'0')}${ng.toString(16).padStart(2,'0')}${nb.toString(16).padStart(2,'0')}`;
+        r = parseInt(h.substr(0,2),16); g = parseInt(h.substr(2,2),16); b = parseInt(h.substr(4,2),16);
+      } else {
+        const rgbMatch = str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+        if (rgbMatch) { r = +rgbMatch[1]; g = +rgbMatch[2]; b = +rgbMatch[3]; }
+        else {
+          const hslMatch = str.match(/^hsla?\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?/);
+          if (hslMatch) { [r,g,b] = _hslToRgb(+hslMatch[1], +hslMatch[2], +hslMatch[3]); }
+          else return str;
+        }
       }
-      const rgbMatch = str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
-      if (rgbMatch) {
-        const nr = _curve(255 - +rgbMatch[1], gamma, maxOut);
-        const ng = _curve(255 - +rgbMatch[2], gamma, maxOut);
-        const nb = _curve(255 - +rgbMatch[3], gamma, maxOut);
-        const aMatch = str.match(/,\s*([\d.]+)\s*\)$/);
-        return aMatch ? `rgba(${nr},${ng},${nb},${aMatch[1]})` : `rgb(${nr},${ng},${nb})`;
-      }
-      return str;
+      const nr = _curve(255-r, gamma, maxOut);
+      const ng = _curve(255-g, gamma, maxOut);
+      const nb = _curve(255-b, gamma, maxOut);
+      const aMatch = str.match(/,\s*([\d.]+)\s*\)$/);
+      if (aMatch && !str.startsWith('#')) return `rgba(${nr},${ng},${nb},${aMatch[1]})`;
+      return `#${nr.toString(16).padStart(2,'0')}${ng.toString(16).padStart(2,'0')}${nb.toString(16).padStart(2,'0')}`;
     }
     function _walkStyleColours(obj, key, gamma, maxOut) {
       if (!obj) return obj;

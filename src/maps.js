@@ -1112,6 +1112,29 @@ export const ATLAS_MAPS = [
     ],
     layers: [
       {
+        // Glow layer — wide + blurred underneath for luminous effect
+        id: 'rivers-glow',
+        type: 'line',
+        source: 'rivers',
+        'source-layer': 'rivers',
+        paint: {
+          'line-color': ['get', 'colour'],
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            3, ['interpolate', ['linear'], ['get', 'w'], 0, 1.5, 1, 6.0],
+            8, ['interpolate', ['linear'], ['get', 'w'], 0, 3.0, 1, 12.0],
+            12, ['interpolate', ['linear'], ['get', 'w'], 0, 4.0, 1, 18.0],
+          ],
+          'line-opacity': [
+            'interpolate', ['linear'], ['get', 'w'],
+            0, 0.08,
+            1, 0.25,
+          ],
+          'line-blur': 4,
+        },
+      },
+      {
+        // Core layer — sharp bright lines on top
         id: 'rivers-lines',
         type: 'line',
         source: 'rivers',
@@ -1120,14 +1143,14 @@ export const ATLAS_MAPS = [
           'line-color': ['get', 'colour'],
           'line-width': [
             'interpolate', ['linear'], ['zoom'],
-            3, ['interpolate', ['linear'], ['get', 'w'], 0, 0.3, 1, 1.5],
-            8, ['interpolate', ['linear'], ['get', 'w'], 0, 0.5, 1, 3.5],
-            12, ['interpolate', ['linear'], ['get', 'w'], 0, 1.0, 1, 6.0],
+            3, ['interpolate', ['linear'], ['get', 'w'], 0, 0.5, 1, 2.5],
+            8, ['interpolate', ['linear'], ['get', 'w'], 0, 0.8, 1, 5.0],
+            12, ['interpolate', ['linear'], ['get', 'w'], 0, 1.2, 1, 8.0],
           ],
           'line-opacity': [
             'interpolate', ['linear'], ['get', 'w'],
-            0, 0.5,
-            1, 0.95,
+            0, 0.75,
+            1, 1.0,
           ],
         },
       },

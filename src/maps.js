@@ -1112,25 +1112,6 @@ export const ATLAS_MAPS = [
     ],
     layers: [
       {
-        // Glow layer — wide + blurred underneath for luminous effect
-        id: 'rivers-glow',
-        type: 'line',
-        source: 'rivers',
-        'source-layer': 'rivers',
-        paint: {
-          'line-color': ['get', 'colour'],
-          'line-width': [
-            'interpolate', ['linear'], ['zoom'],
-            3, ['step', ['get', 'w'], 2.0, 0.001, 5.0, 0.05, 14.0],
-            8, ['step', ['get', 'w'], 4.0, 0.001, 9.0, 0.05, 26.0],
-            12, ['step', ['get', 'w'], 6.0, 0.001, 14.0, 0.05, 40.0],
-          ],
-          'line-opacity': ['step', ['get', 'w'], 0.08, 0.001, 0.18, 0.05, 0.35],
-          'line-blur': 6,
-        },
-      },
-      {
-        // Core layer — sharp bright lines on top
         id: 'rivers-lines',
         type: 'line',
         source: 'rivers',

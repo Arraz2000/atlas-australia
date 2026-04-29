@@ -1118,7 +1118,7 @@ export const ATLAS_MAPS = [
     noStateFills: true,
     baseStyle: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`,
     cssFilter: 'invert(100%) hue-rotate(180deg) brightness(0.82) contrast(0.9)',
-    hideLayerPatterns: ['boundary', 'admin', 'border'],
+    hideLayerPatterns: ['boundary', 'admin', 'border', 'coastline', 'outline'],
     sources: [
       {
         id: 'rivers',

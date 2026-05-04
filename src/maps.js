@@ -62,7 +62,7 @@ export const ATLAS_MAPS = [
             0.05,  0.90,
             2.0,   1.0,
           ],
-          'line-blur': 2.0,
+          'line-blur': 1.2,
         },
       },
     ],

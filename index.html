@@ -716,10 +716,18 @@
     map.on('load', async () => {
       await loadStates();
       buildSidebar();
-      // Load first map
+      // Load first map — same style logic as _selectMap to handle baseStyleFetch
       const first = ATLAS_MAPS[0];
       currentMapId = first.id;
-      await applyMap(first);
+      let initStyle = first.baseStyle;
+      if (first.baseStyleFetch) {
+        const { url, gamma = 2.6, maxOut = 70 } = first.baseStyleFetch;
+        initStyle = await _fetchTransformedStyle(url, gamma, maxOut);
+        map.setStyle(initStyle);
+        map.once('styledata', () => applyMap(first));
+      } else {
+        await applyMap(first);
+      }
     });
   </script>
 </body>

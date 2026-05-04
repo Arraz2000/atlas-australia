@@ -32,20 +32,20 @@ export const ATLAS_MAPS = [
         paint: {
           // Edit colours here — no PMTiles rebuild needed (matched on div field)
           'line-color': ['match', ['get', 'div'],
-            '1',  '#2a9d4e',  // NE Coast (QLD)         — forest green
-            '2a', '#8eb840',  // SE Coast (NSW)         — yellow-green
-            '2b', '#a8c838',  // SE Coast (VIC)         — light yellow-green
+            '1',  '#2a7a38',  // NE Coast (QLD)         — rich dark green
+            '2a', '#7aaa28',  // SE Coast (NSW)         — olive yellow-green
+            '2b', '#90b830',  // SE Coast (VIC)         — yellow-green
             '3',  '#00b8c8',  // Tasmania               — bright teal
-            '4',  '#e8d860',  // Murray-Darling         — cream yellow
-            '5',  '#785838',  // SA Gulf                — dark brown
-            '6',  '#181208',  // SW Plateau             — near black
-            '7',  '#d05830',  // SW Coast (WA)          — orange-red
-            '8',  '#b82818',  // Pilbara-Gascoyne       — deep red
-            '9',  '#a02010',  // NW Plateau             — crimson
-            '10', '#c0b828',  // Timor Sea (NT)         — khaki yellow
-            '11', '#201808',  // Lake Eyre Basin        — near black
-            '12', '#78a830',  // Carpentaria Coast      — olive green
-            '#555555'],
+            '4',  '#ece040',  // Murray-Darling         — bright cream-yellow
+            '5',  '#7a5828',  // SA Gulf                — dark olive-orange
+            '6',  '#1a0c06',  // SW Plateau             — near black
+            '7',  '#c85828',  // SW Coast (WA)          — orange
+            '8',  '#cc3818',  // Pilbara-Gascoyne       — red-orange
+            '9',  '#7a2210',  // NW Plateau             — dark red-brown
+            '10', '#a89820',  // Timor Sea (NT)         — yellow-olive
+            '11', '#181008',  // Lake Eyre Basin        — near black
+            '12', '#889820',  // Carpentaria Coast      — olive yellow
+            '#444444'],
           'line-width': [
             'interpolate', ['linear'], ['zoom'],
             3,  ['step', ['get', 'w'], 0.4, 0.001, 0.55, 0.05, 0.8],

@@ -791,7 +791,13 @@
       }
 
       map.setStyle(style);
-      map.once('styledata', () => applyMap(riversDef));
+      map.once('styledata', async () => {
+        await applyMap(riversDef);
+        const showShadow = ['satellite', 'topo'].includes(bg);
+        if (map.getLayer('rivers-lines-shadow')) {
+          map.setLayoutProperty('rivers-lines-shadow', 'visibility', showShadow ? 'visible' : 'none');
+        }
+      });
     };
 
     // ── Export rivers as transparent PNG ─────────────────────────

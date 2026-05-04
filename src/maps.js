@@ -5,7 +5,6 @@ const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
 export const ATLAS_MAPS = [
-  ,
   {
     id: 'rivers',
     category: 'environment',

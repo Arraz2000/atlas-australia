@@ -360,7 +360,7 @@
     function buildSidebar() {
       const inner = document.getElementById('sidebar-panel-inner');
       inner.innerHTML = SIDEBAR_GROUPS.map(group => {
-        const maps = ATLAS_MAPS.filter(m => m.category === group.key);
+        const maps = ATLAS_MAPS.filter(m => m && m.category === group.key);
         let items;
         if (group.subGroup) {
           const subIds = new Set(group.subGroup.ids);
@@ -661,7 +661,7 @@
     // ── Select map (called from HTML onclick) ─────────────────
     window._selectMap = async function(id) {
       if (id === currentMapId) { closeSidebar(); return; }
-      const mapDef = ATLAS_MAPS.find(m => m.id === id);
+      const mapDef = ATLAS_MAPS.find(m => m && m.id === id);
       if (!mapDef) return;
       currentMapId = id;
       closeSidebar();

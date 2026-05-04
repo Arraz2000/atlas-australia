@@ -78,7 +78,6 @@ export const ATLAS_MAPS = [
     layers: [],  // state fill added dynamically from states.geojson
   },
 
-  ,
   {
     id: 'protected-areas',
     category: 'environment',
@@ -148,7 +147,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'australian-fires',
     category: 'disasters',
@@ -206,7 +204,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'electoral',
     category: 'society',
@@ -248,7 +245,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'renewables',
     category: 'society',
@@ -286,7 +282,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'mines',
     category: 'society',
@@ -321,7 +316,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'population',
     category: 'society',
@@ -369,7 +363,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'land-access',
     category: 'environment',
@@ -435,7 +428,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'mtb-trails',
     category: 'society',
@@ -524,7 +516,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'australian-floods',
     category: 'disasters',
@@ -571,7 +562,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
   {
     id: 'dark',
     category: 'base',
@@ -588,8 +578,6 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
-
-  ,
 
   // ── Historical maps ────────────────────────────────────────────
 
@@ -628,8 +616,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
-
   {
     id: 'historical-arrowsmith-1844',
     category: 'historical',
@@ -664,8 +650,6 @@ export const ATLAS_MAPS = [
       },
     ],
   },
-
-  ,
 
   {
     id: 'historical-thomson-1814',
@@ -702,8 +686,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
-
   {
     id: 'historical-tallis-1851',
     category: 'historical',
@@ -738,8 +720,6 @@ export const ATLAS_MAPS = [
       },
     ],
   },
-
-  ,
 
   {
     id: 'historical-johnson-1862',
@@ -776,8 +756,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
-
   {
     id: 'historical-mitchell-1864',
     category: 'historical',
@@ -812,8 +790,6 @@ export const ATLAS_MAPS = [
       },
     ],
   },
-
-  ,
 
   {
     id: 'historical-stieler-1876',
@@ -850,8 +826,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
-
   {
     id: 'historical-wwii-1943',
     category: 'historical',
@@ -886,8 +860,6 @@ export const ATLAS_MAPS = [
       },
     ],
   },
-
-  ,
 
   {
     id: 'historical-johnson-1861',
@@ -924,8 +896,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
-
   {
     id: 'historical-johnson-1870',
     category: 'historical',
@@ -960,8 +930,6 @@ export const ATLAS_MAPS = [
       },
     ],
   },
-
-  ,
 
   {
     id: 'historical-stanford-1880',
@@ -998,8 +966,6 @@ export const ATLAS_MAPS = [
     ],
   },
 
-  ,
-
   // ── Base style showcase ────────────────────────────────────────
 
   {
@@ -1020,7 +986,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-bright',
     category: 'base',
@@ -1039,8 +1004,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
-
   // ── MapTiler styles ───────────────────────────────────────────
 
   {
@@ -1056,7 +1019,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-hybrid',
     category: 'base',
@@ -1070,7 +1032,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-topo',
     category: 'base',
@@ -1084,7 +1045,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-outdoor',
     category: 'base',
@@ -1098,7 +1058,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-aquarelle',
     category: 'base',
@@ -1112,7 +1071,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-ocean',
     category: 'base',
@@ -1126,7 +1084,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-winter',
     category: 'base',
@@ -1140,7 +1097,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-toner',
     category: 'base',
@@ -1154,7 +1110,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-landscape',
     category: 'base',
@@ -1168,7 +1123,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-dataviz',
     category: 'base',
@@ -1182,7 +1136,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'style-dataviz-dark',
     category: 'base',
@@ -1196,7 +1149,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'backdrop',
     category: 'base',
@@ -1210,7 +1162,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'backdrop-dark',
     category: 'base',
@@ -1225,7 +1176,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'topo',
     category: 'base',
@@ -1239,7 +1189,6 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
-  ,
   {
     id: 'terrain-3d',
     category: 'base',

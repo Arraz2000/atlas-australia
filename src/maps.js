@@ -30,7 +30,22 @@ export const ATLAS_MAPS = [
         'source-layer': 'rivers',
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
-          'line-color': ['get', 'colour'],
+          // Edit colours here — no PMTiles rebuild needed (matched on div field)
+          'line-color': ['match', ['get', 'div'],
+            '1',  '#4FC3F7',  // North East Coast       — light blue
+            '2a', '#81C784',  // South East Coast (NSW) — green
+            '2b', '#AED581',  // South East Coast (VIC) — lime
+            '3',  '#F06292',  // Tasmania               — pink
+            '4',  '#FFD54F',  // Murray-Darling         — amber/gold
+            '5',  '#FF8A65',  // South Australian Gulf  — orange
+            '6',  '#CE93D8',  // South Western Plateau  — lavender
+            '7',  '#80DEEA',  // South West Coast       — cyan
+            '8',  '#EF9A9A',  // Pilbara-Gascoyne       — salmon
+            '9',  '#B0BEC5',  // North Western Plateau  — grey-blue
+            '10', '#A5D6A7',  // Tanami-Timor Sea Coast — mint
+            '11', '#FFCC80',  // Lake Eyre Basin        — pale gold
+            '12', '#4DB6AC',  // Carpentaria Coast      — teal
+            '#888888'],
           'line-width': [
             'interpolate', ['linear'], ['zoom'],
             3,  ['step', ['get', 'w'], 0.4, 0.001, 0.55, 0.05, 0.8],

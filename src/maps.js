@@ -32,19 +32,19 @@ export const ATLAS_MAPS = [
         paint: {
           // Edit colours here — no PMTiles rebuild needed (matched on div field)
           'line-color': ['match', ['get', 'div'],
-            '1',  '#1e5e28',  // NE Coast (QLD)         — deep forest green
-            '2a', '#789020',  // SE Coast (NSW)         — olive
-            '2b', '#90a828',  // SE Coast (VIC)         — olive-green
-            '3',  '#00b8c8',  // Tasmania               — bright teal
-            '4',  '#f0e858',  // Murray-Darling         — bright cream-yellow
-            '5',  '#685028',  // SA Gulf                — dark olive
-            '6',  '#180a04',  // SW Plateau             — near black
-            '7',  '#b86018',  // SW Coast (WA)          — amber-orange
-            '8',  '#c85020',  // Pilbara-Gascoyne       — orange-red
-            '9',  '#882010',  // NW Plateau             — dark red
-            '10', '#c0a818',  // Timor Sea (NT)         — golden yellow
-            '11', '#140a04',  // Lake Eyre Basin        — near black
-            '12', '#607020',  // Carpentaria Coast      — dark olive (not lime)
+            '1',  '#4aa441',  // NE Coast (QLD)
+            '2a', '#3a8d39',  // SE Coast (NSW)
+            '2b', '#399e70',  // SE Coast (VIC)
+            '3',  '#1ca9a2',  // Tasmania
+            '4',  '#c8a128',  // Murray-Darling
+            '5',  '#ffa33d',  // SA Gulf
+            '6',  '#db5948',  // SW Plateau
+            '7',  '#dca85c',  // SW Coast (WA)
+            '8',  '#c97a2e',  // Pilbara-Gascoyne
+            '9',  '#be9d5d',  // NW Plateau
+            '10', '#d0c738',  // Timor Sea (NT)
+            '11', '#d7ce6a',  // Lake Eyre Basin
+            '12', '#93b843',  // Carpentaria Coast
             '#333333'],
           'line-width': [
             'interpolate', ['linear'], ['zoom'],

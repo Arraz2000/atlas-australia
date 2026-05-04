@@ -781,13 +781,11 @@
         const { url, gamma = 2.0, maxOut = 110 } = riversDef.baseStyleFetch;
         style = await _fetchTransformedStyle(url, gamma, maxOut);
       } else if (bg === 'satellite') {
-        style = await _fetchTransformedStyle(
-          `https://api.maptiler.com/maps/satellite/style.json?key=${MT}`, 1.0, 255
-        );
+        const resp = await fetch(`https://api.maptiler.com/maps/satellite/style.json?key=${MT}`);
+        style = await resp.json();
       } else if (bg === 'topo') {
-        style = await _fetchTransformedStyle(
-          `https://api.maptiler.com/maps/topo-v2/style.json?key=${MT}`, 1.8, 130
-        );
+        const resp = await fetch(`https://api.maptiler.com/maps/topo-v2/style.json?key=${MT}`);
+        style = await resp.json();
       }
 
       map.setStyle(style);

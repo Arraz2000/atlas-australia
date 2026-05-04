@@ -40,7 +40,7 @@ export const ATLAS_MAPS = [
             12, ['step', ['get', 'w'], 22.0, 0.001, 80.0, 0.05, 160.0],
             14, ['step', ['get', 'w'], 36.0, 0.001, 120.0, 0.05, 220.0],
           ],
-          'line-blur': 8,
+          'line-blur': 24,
           'line-opacity': ['interpolate', ['linear'], ['get', 'w'],
             0,     0.20,
             0.001, 0.45,

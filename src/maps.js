@@ -56,7 +56,7 @@ export const ATLAS_MAPS = [
             14, ['step', ['get', 'w'], 10.0, 0.001, 38.0, 0.05, 72.0],
           ],
           'line-opacity': 1.0,
-          'line-blur': 1.2,
+          'line-blur': 0,
         },
       },
     ],

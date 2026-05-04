@@ -254,6 +254,14 @@
     }
     .fy-btn:hover { color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.35); }
     .fy-btn.active { color: #fff; background: rgba(255,255,255,0.08); }
+    #export-btn {
+      position: fixed; bottom: 48px; right: 10px; z-index: 100;
+      background: rgba(20,20,28,0.85); color: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 6px;
+      padding: 5px 10px; font-size: 11px; cursor: pointer;
+      backdrop-filter: blur(4px); transition: all 0.2s;
+    }
+    #export-btn:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
   </style>
 </head>
 <body>
@@ -280,6 +288,8 @@
     <span id="sidebar-tab-arrow">›</span>
   </div>
   <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <button id="export-btn" onclick="window._exportRiversPNG()" style="display:none" title="Export transparent PNG">⬇ PNG</button>
 
   <div id="legend-panel">
     <div class="legend-title">Layers</div>
@@ -329,6 +339,7 @@
       maxZoom: DEFAULT_VIEW.maxZoom,
       // No maxBounds — it forces zoom up as window widens, defeating height-based sizing
       attributionControl: false,
+      preserveDrawingBuffer: true,
     });
 
     // Re-fit on resize — only if user hasn't zoomed away from home
@@ -420,6 +431,9 @@
       document.getElementById('title-main').textContent = mapDef.title;
       document.getElementById('title-sub').textContent = mapDef.subtitle;
       document.getElementById('legend-story-panel').textContent = mapDef.story;
+
+      // Show export button only on rivers map
+      document.getElementById('export-btn').style.display = mapDef.id === 'rivers' ? 'block' : 'none';
 
       // Update legend
       const legendPanel = document.getElementById('legend-panel');
@@ -727,6 +741,40 @@
         await applyMap(first);
       }
     });
+
+    // ── Export rivers as transparent PNG ─────────────────────────
+    window._exportRiversPNG = function() {
+      const btn = document.getElementById('export-btn');
+      btn.textContent = '⏳ Exporting…';
+      btn.disabled = true;
+
+      // Hide every layer except rivers-lines
+      const layers = map.getStyle().layers || [];
+      const toHide = layers.filter(l => l.id !== 'rivers-lines').map(l => l.id);
+      toHide.forEach(id => {
+        try { map.setLayoutProperty(id, 'visibility', 'none'); } catch(e) {}
+      });
+
+      map.once('idle', () => {
+        const dataURL = map.getCanvas().toDataURL('image/png');
+
+        // Restore all layers
+        toHide.forEach(id => {
+          try { map.setLayoutProperty(id, 'visibility', 'visible'); } catch(e) {}
+        });
+
+        btn.textContent = '⬇ PNG';
+        btn.disabled = false;
+
+        // Trigger download
+        const a = document.createElement('a');
+        a.href = dataURL;
+        a.download = 'rivers-transparent.png';
+        a.click();
+      });
+
+      map.triggerRepaint();
+    };
   </script>
 </body>
 </html>

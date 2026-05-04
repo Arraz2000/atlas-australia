@@ -28,6 +28,7 @@ export const ATLAS_MAPS = [
         type: 'line',
         source: 'rivers',
         'source-layer': 'rivers',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
           'line-color': ['get', 'colour'],
           'line-width': [

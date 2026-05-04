@@ -262,6 +262,21 @@
       backdrop-filter: blur(4px); transition: all 0.2s;
     }
     #export-btn:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+
+    #bg-switcher {
+      display: none;
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      z-index: 100; background: rgba(15,15,20,0.88);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+      padding: 5px 6px; display: none; gap: 4px; backdrop-filter: blur(6px);
+    }
+    .bg-opt {
+      background: none; border: 1px solid transparent; border-radius: 5px;
+      color: rgba(255,255,255,0.55); font-size: 11px; padding: 4px 10px;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .bg-opt:hover { color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.3); }
+    .bg-opt.active { color: #fff; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.4); }
   </style>
 </head>
 <body>
@@ -290,6 +305,13 @@
   <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
   <button id="export-btn" onclick="window._exportRiversPNG()" style="display:none" title="Export transparent PNG">⬇ PNG</button>
+
+  <div id="bg-switcher">
+    <button class="bg-opt active" data-bg="backdrop" onclick="window._setRiversBg(this)">🌑 Dark</button>
+    <button class="bg-opt" data-bg="satellite" onclick="window._setRiversBg(this)">🛰 Satellite</button>
+    <button class="bg-opt" data-bg="black" onclick="window._setRiversBg(this)">⬛ Black</button>
+    <button class="bg-opt" data-bg="topo" onclick="window._setRiversBg(this)">🗻 Topo</button>
+  </div>
 
   <div id="legend-panel">
     <div class="legend-title">Layers</div>
@@ -432,8 +454,10 @@
       document.getElementById('title-sub').textContent = mapDef.subtitle;
       document.getElementById('legend-story-panel').textContent = mapDef.story;
 
-      // Show export button only on rivers map
+      // Show export button and background switcher only on rivers map
       document.getElementById('export-btn').style.display = mapDef.id === 'rivers' ? 'block' : 'none';
+      const bgSwitcher = document.getElementById('bg-switcher');
+      bgSwitcher.style.display = mapDef.id === 'rivers' ? 'flex' : 'none';
 
       // Update legend
       const legendPanel = document.getElementById('legend-panel');
@@ -741,6 +765,34 @@
         await applyMap(first);
       }
     });
+
+    // ── Rivers background switcher ────────────────────────────────
+    window._setRiversBg = async function(btn) {
+      document.querySelectorAll('.bg-opt').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const riversDef = ATLAS_MAPS.find(m => m && m.id === 'rivers');
+      const bg = btn.dataset.bg;
+
+      let style;
+      if (bg === 'black') {
+        style = riversDef.baseStyle; // minimal dark style, no backdrop tiles
+      } else if (bg === 'backdrop') {
+        const { url, gamma = 2.0, maxOut = 110 } = riversDef.baseStyleFetch;
+        style = await _fetchTransformedStyle(url, gamma, maxOut);
+      } else if (bg === 'satellite') {
+        style = await _fetchTransformedStyle(
+          `https://api.maptiler.com/maps/satellite/style.json?key=${MT}`, 1.0, 255
+        );
+      } else if (bg === 'topo') {
+        style = await _fetchTransformedStyle(
+          `https://api.maptiler.com/maps/topo-v2/style.json?key=${MT}`, 1.8, 130
+        );
+      }
+
+      map.setStyle(style);
+      map.once('styledata', () => applyMap(riversDef));
+    };
 
     // ── Export rivers as transparent PNG ─────────────────────────
     window._exportRiversPNG = function() {

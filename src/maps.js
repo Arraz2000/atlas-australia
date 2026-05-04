@@ -5,6 +5,47 @@ const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
 export const ATLAS_MAPS = [
+  ,
+  {
+    id: 'rivers',
+    category: 'environment',
+    title: 'River Basins',
+    subtitle: 'Drainage divisions & waterways',
+    story: 'Australia\'s river network mapped by drainage division — 13 basins coloured by watershed, with line weight scaled by upstream drainage area. Data from the Bureau of Meteorology Geofabric V3.3, showing 682,000 stream segments from the full SH_Network dataset.',
+    palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
+    noStateFills: true,
+    baseStyle: { version: 8, glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MT}`, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] },
+    baseStyleFetch: { url: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`, gamma: 2.0, maxOut: 110 },
+    cssFilter: 'brightness(0.85) saturate(0.8)',
+    sources: [
+      {
+        id: 'rivers',
+        spec: { type: 'vector', url: `pmtiles://${R2}/rivers.pmtiles` },
+      },
+    ],
+    layers: [
+      {
+        id: 'rivers-lines',
+        type: 'line',
+        source: 'rivers',
+        'source-layer': 'rivers',
+        paint: {
+          'line-color': ['get', 'colour'],
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            3,  ['step', ['get', 'w'], 0.4, 0.001, 0.55, 0.05, 0.8],
+            5,  ['step', ['get', 'w'], 0.5, 0.001, 0.9, 0.05, 1.6],
+            7,  ['step', ['get', 'w'], 0.6, 0.001, 1.3, 0.05, 2.4],
+            10, ['step', ['get', 'w'], 3.0, 0.001, 10.0, 0.05, 15.0],
+            12, ['step', ['get', 'w'], 6.5, 0.001, 26.0, 0.05, 50.0],
+            14, ['step', ['get', 'w'], 10.0, 0.001, 38.0, 0.05, 72.0],
+          ],
+          'line-opacity': ['step', ['get', 'w'], 0.9, 0.001, 1.0, 0.05, 1.0],
+        },
+      },
+    ],
+  },
+
   {
     id: 'states',
     category: 'base',
@@ -21,6 +62,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],  // state fill added dynamically from states.geojson
   },
+
+  ,
   {
     id: 'protected-areas',
     category: 'environment',
@@ -89,6 +132,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
   {
     id: 'australian-fires',
     category: 'disasters',
@@ -145,6 +190,8 @@ export const ATLAS_MAPS = [
         paint: { 'line-color': '#f1c40f', 'line-width': 0.6, 'line-opacity': 0.7 }, layout: { visibility: 'none' } },
     ],
   },
+
+  ,
   {
     id: 'electoral',
     category: 'society',
@@ -185,6 +232,8 @@ export const ATLAS_MAPS = [
         paint: { 'line-color': '#ffffff', 'line-width': 0.5, 'line-opacity': 0.4 } },
     ],
   },
+
+  ,
   {
     id: 'renewables',
     category: 'society',
@@ -221,6 +270,8 @@ export const ATLAS_MAPS = [
         paint: { 'circle-radius': ['interpolate',['linear'],['zoom'], 4,7, 7,5, 14,3], 'circle-color': '#4fc3f7', 'circle-opacity': 0.85 } },
     ],
   },
+
+  ,
   {
     id: 'mines',
     category: 'society',
@@ -254,6 +305,8 @@ export const ATLAS_MAPS = [
         paint: { 'circle-radius': ['interpolate',['linear'],['zoom'], 4,7, 7,5, 14,3], 'circle-color': '#bf8c30', 'circle-opacity': 0.85 } },
     ],
   },
+
+  ,
   {
     id: 'population',
     category: 'society',
@@ -300,6 +353,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
   {
     id: 'land-access',
     category: 'environment',
@@ -364,6 +419,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
   {
     id: 'mtb-trails',
     category: 'society',
@@ -451,6 +508,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
   {
     id: 'australian-floods',
     category: 'disasters',
@@ -496,6 +555,8 @@ export const ATLAS_MAPS = [
         paint: { 'line-color': '#58d68d', 'line-width': 0.7, 'line-opacity': 0.8 }, layout: { visibility: 'none' } },
     ],
   },
+
+  ,
   {
     id: 'dark',
     category: 'base',
@@ -513,77 +574,9 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
+  ,
+
   // ── Historical maps ────────────────────────────────────────────
-
-  {
-    id: 'historical-arrowsmith-1844',
-    category: 'historical',
-    title: 'Arrowsmith 1844',
-    subtitle: 'Colonial survey of Australia',
-    story: 'John Arrowsmith\u2019s 1844 map of Australia \u2014 drawn in London from the surveys of Matthew Flinders, Nicolas Baudin, and the British Admiralty. It captures the continent as British colonists understood it: the settled coasts mapped in meticulous detail, the interior almost entirely blank. Only five years since the first overland crossing of southern Australia by Edward John Eyre. Perth, Adelaide, Melbourne, Sydney, and Hobart are marked; Darwin, Alice Springs, and most of Queensland do not yet exist. The map is a portrait of a continent still being written.',
-    palette: {
-      background: '#f5f0e8',
-      fill: ['#c8a878'],
-      stroke: '#7a6040',
-      text: '#3a2a10',
-    },
-    noStateFills: true,
-    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
-    sources: [
-      {
-        id: 'historical-arrowsmith',
-        spec: {
-          type: 'raster',
-          url: `pmtiles://${R2}/historical_arrowsmith.pmtiles`,
-          tileSize: 256,
-          maxzoom: 8,
-        },
-      },
-    ],
-    layers: [
-      {
-        id: 'historical-arrowsmith-layer',
-        type: 'raster',
-        source: 'historical-arrowsmith',
-        paint: { 'raster-opacity': 1.0 },
-      },
-    ],
-  },
-
-  {
-    id: 'historical-thomson-1814',
-    category: 'historical',
-    title: 'Thomson 1814',
-    subtitle: 'First map named \u201cAustralia\u201d',
-    story: 'John Thomson\u2019s 1814 map of Australia, New Zealand and New Guinea was among the first major English atlases to adopt Matthew Flinders\u2019 proposed name \u201cAustralia\u201d for the continent. Published in Edinburgh the same year Flinders\u2019 own \u201cA Voyage to Terra Australis\u201d appeared, Thomson\u2019s map captured the continent at the dawn of its naming \u2014 the coastline traced from naval surveys, the interior a speculation. New South Wales was the only significant colony; the sites of Melbourne, Adelaide, and Perth were uninhabited. Tasmania was called Van Diemen\u2019s Land. New Guinea appeared hazily to the north. A document of what was known, and how much was not.',
-    palette: {
-      background: '#f0ebe0',
-      fill: ['#b89a6e'],
-      stroke: '#6b5030',
-      text: '#3a2a10',
-    },
-    noStateFills: true,
-    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
-    sources: [
-      {
-        id: 'historical-thomson-1814-src',
-        spec: {
-          type: 'raster',
-          url: `pmtiles://${R2}/historical_thomson_1814.pmtiles`,
-          tileSize: 256,
-          maxzoom: 9,
-        },
-      },
-    ],
-    layers: [
-      {
-        id: 'historical-thomson-1814-layer',
-        type: 'raster',
-        source: 'historical-thomson-1814-src',
-        paint: { 'raster-opacity': 1.0 },
-      },
-    ],
-  },
 
   {
     id: 'historical-pinkerton-1818',
@@ -620,6 +613,82 @@ export const ATLAS_MAPS = [
     ],
   },
 
+  ,
+
+  {
+    id: 'historical-arrowsmith-1844',
+    category: 'historical',
+    title: 'Arrowsmith 1844',
+    subtitle: 'Colonial survey of Australia',
+    story: 'John Arrowsmith\u2019s 1844 map of Australia \u2014 drawn in London from the surveys of Matthew Flinders, Nicolas Baudin, and the British Admiralty. It captures the continent as British colonists understood it: the settled coasts mapped in meticulous detail, the interior almost entirely blank. Only five years since the first overland crossing of southern Australia by Edward John Eyre. Perth, Adelaide, Melbourne, Sydney, and Hobart are marked; Darwin, Alice Springs, and most of Queensland do not yet exist. The map is a portrait of a continent still being written.',
+    palette: {
+      background: '#f5f0e8',
+      fill: ['#c8a878'],
+      stroke: '#7a6040',
+      text: '#3a2a10',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-arrowsmith',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_arrowsmith.pmtiles`,
+          tileSize: 256,
+          maxzoom: 8,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-arrowsmith-layer',
+        type: 'raster',
+        source: 'historical-arrowsmith',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  ,
+
+  {
+    id: 'historical-thomson-1814',
+    category: 'historical',
+    title: 'Thomson 1814',
+    subtitle: 'First map named \u201cAustralia\u201d',
+    story: 'John Thomson\u2019s 1814 map of Australia, New Zealand and New Guinea was among the first major English atlases to adopt Matthew Flinders\u2019 proposed name \u201cAustralia\u201d for the continent. Published in Edinburgh the same year Flinders\u2019 own \u201cA Voyage to Terra Australis\u201d appeared, Thomson\u2019s map captured the continent at the dawn of its naming \u2014 the coastline traced from naval surveys, the interior a speculation. New South Wales was the only significant colony; the sites of Melbourne, Adelaide, and Perth were uninhabited. Tasmania was called Van Diemen\u2019s Land. New Guinea appeared hazily to the north. A document of what was known, and how much was not.',
+    palette: {
+      background: '#f0ebe0',
+      fill: ['#b89a6e'],
+      stroke: '#6b5030',
+      text: '#3a2a10',
+    },
+    noStateFills: true,
+    baseStyle: 'https://tiles.openfreemap.org/styles/positron',
+    sources: [
+      {
+        id: 'historical-thomson-1814-src',
+        spec: {
+          type: 'raster',
+          url: `pmtiles://${R2}/historical_thomson_1814.pmtiles`,
+          tileSize: 256,
+          maxzoom: 9,
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'historical-thomson-1814-layer',
+        type: 'raster',
+        source: 'historical-thomson-1814-src',
+        paint: { 'raster-opacity': 1.0 },
+      },
+    ],
+  },
+
+  ,
+
   {
     id: 'historical-tallis-1851',
     category: 'historical',
@@ -654,6 +723,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
 
   {
     id: 'historical-johnson-1862',
@@ -690,6 +761,8 @@ export const ATLAS_MAPS = [
     ],
   },
 
+  ,
+
   {
     id: 'historical-mitchell-1864',
     category: 'historical',
@@ -724,6 +797,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
 
   {
     id: 'historical-stieler-1876',
@@ -760,6 +835,8 @@ export const ATLAS_MAPS = [
     ],
   },
 
+  ,
+
   {
     id: 'historical-wwii-1943',
     category: 'historical',
@@ -794,6 +871,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
 
   {
     id: 'historical-johnson-1861',
@@ -830,6 +909,8 @@ export const ATLAS_MAPS = [
     ],
   },
 
+  ,
+
   {
     id: 'historical-johnson-1870',
     category: 'historical',
@@ -864,6 +945,8 @@ export const ATLAS_MAPS = [
       },
     ],
   },
+
+  ,
 
   {
     id: 'historical-stanford-1880',
@@ -900,6 +983,8 @@ export const ATLAS_MAPS = [
     ],
   },
 
+  ,
+
   // ── Base style showcase ────────────────────────────────────────
 
   {
@@ -919,6 +1004,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-bright',
     category: 'base',
@@ -937,6 +1024,8 @@ export const ATLAS_MAPS = [
     layers: [],
   },
 
+  ,
+
   // ── MapTiler styles ───────────────────────────────────────────
 
   {
@@ -951,6 +1040,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-hybrid',
     category: 'base',
@@ -963,6 +1054,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-topo',
     category: 'base',
@@ -975,6 +1068,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-outdoor',
     category: 'base',
@@ -987,6 +1082,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-aquarelle',
     category: 'base',
@@ -999,6 +1096,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-ocean',
     category: 'base',
@@ -1011,6 +1110,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-winter',
     category: 'base',
@@ -1023,6 +1124,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-toner',
     category: 'base',
@@ -1035,6 +1138,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-landscape',
     category: 'base',
@@ -1047,6 +1152,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-dataviz',
     category: 'base',
@@ -1059,6 +1166,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'style-dataviz-dark',
     category: 'base',
@@ -1071,6 +1180,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'backdrop',
     category: 'base',
@@ -1083,6 +1194,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'backdrop-dark',
     category: 'base',
@@ -1096,6 +1209,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
+
+  ,
   {
     id: 'topo',
     category: 'base',
@@ -1108,45 +1223,8 @@ export const ATLAS_MAPS = [
     sources: [],
     layers: [],
   },
-  {
-    id: 'rivers',
-    category: 'environment',
-    title: 'River Basins',
-    subtitle: 'Drainage divisions & waterways',
-    story: 'Australia\'s river network mapped by drainage division — 13 basins coloured by watershed, with line weight scaled by upstream drainage area. Data from the Bureau of Meteorology Geofabric V3.3, showing 682,000 stream segments from the full SH_Network dataset.',
-    palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
-    noStateFills: true,
-    baseStyle: { version: 8, glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MT}`, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] },
-    baseStyleFetch: { url: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`, gamma: 2.0, maxOut: 110 },
-    cssFilter: 'brightness(0.85) saturate(0.8)',
-    sources: [
-      {
-        id: 'rivers',
-        spec: { type: 'vector', url: `pmtiles://${R2}/rivers.pmtiles` },
-      },
-    ],
-    layers: [
-      {
-        id: 'rivers-lines',
-        type: 'line',
-        source: 'rivers',
-        'source-layer': 'rivers',
-        paint: {
-          'line-color': ['get', 'colour'],
-          'line-width': [
-            'interpolate', ['linear'], ['zoom'],
-            3,  ['step', ['get', 'w'], 0.4, 0.001, 0.55, 0.05, 0.8],
-            5,  ['step', ['get', 'w'], 0.5, 0.001, 0.9, 0.05, 1.6],
-            7,  ['step', ['get', 'w'], 0.6, 0.001, 1.3, 0.05, 2.4],
-            10, ['step', ['get', 'w'], 3.0, 0.001, 10.0, 0.05, 15.0],
-            12, ['step', ['get', 'w'], 6.5, 0.001, 26.0, 0.05, 50.0],
-            14, ['step', ['get', 'w'], 10.0, 0.001, 38.0, 0.05, 72.0],
-          ],
-          'line-opacity': ['step', ['get', 'w'], 0.9, 0.001, 1.0, 0.05, 1.0],
-        },
-      },
-    ],
-  },
+
+  ,
   {
     id: 'terrain-3d',
     category: 'base',

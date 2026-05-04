@@ -114,6 +114,27 @@
     .sb-group-items { display: none; }
     .sb-group.open .sb-group-items { display: block; }
 
+    /* ── Nested sub-group (Base Maps) ── */
+    .sb-subgroup { border-top: 1px solid rgba(255,255,255,0.04); }
+    .sb-subgroup-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px 8px 42px; cursor: pointer;
+      transition: background 0.15s; user-select: none;
+    }
+    .sb-subgroup-header:hover { background: rgba(255,255,255,0.04); }
+    .sb-subgroup-label {
+      flex: 1; color: rgba(255,255,255,0.45); font-size: 0.68rem;
+      font-family: system-ui, sans-serif; letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .sb-subgroup-chevron {
+      color: rgba(255,255,255,0.25); font-size: 0.65rem;
+      transition: transform 0.2s; flex-shrink: 0;
+    }
+    .sb-subgroup.open .sb-subgroup-chevron { transform: rotate(180deg); }
+    .sb-subgroup-items { display: none; }
+    .sb-subgroup.open .sb-subgroup-items { display: block; }
+
     .map-option {
       padding: 10px 16px 10px 42px; cursor: pointer;
       border-bottom: 1px solid rgba(255,255,255,0.04);
@@ -329,23 +350,54 @@
 
     // ── Build sidebar accordion ───────────────────────────────
     const SIDEBAR_GROUPS = [
-      { key: 'base',        icon: '🗺️',  label: 'Base Styles' },
-      { key: 'historical',  icon: '📜',  label: 'Historical Maps' },
-      { key: 'disasters',   icon: '🔥',  label: 'Natural Disasters' },
       { key: 'environment', icon: '🌿',  label: 'Environment & Land' },
       { key: 'society',     icon: '🏛️',  label: 'Society & Data' },
+      { key: 'disasters',   icon: '🔥',  label: 'Natural Disasters' },
+      { key: 'historical',  icon: '📜',  label: 'Historical Maps' },
+      { key: 'base',        icon: '🗺️',  label: 'Base & Styles',
+        subGroup: { label: 'Base Maps', ids: ['style-liberty','style-bright','style-satellite','style-hybrid','style-topo','style-outdoor','style-aquarelle','style-ocean','style-winter','style-toner','style-landscape','style-dataviz','style-dataviz-dark','backdrop','backdrop-dark','topo'] }
+      },
     ];
 
     function buildSidebar() {
       const inner = document.getElementById('sidebar-panel-inner');
       inner.innerHTML = SIDEBAR_GROUPS.map(group => {
         const maps = ATLAS_MAPS.filter(m => m.category === group.key);
-        const items = maps.map(m => `
-          <div class="map-option" data-id="${m.id}" onclick="window._selectMap('${m.id}')">
-            <div class="opt-title">${m.title}</div>
-            <div class="opt-sub">${m.subtitle}</div>
-          </div>
-        `).join('');
+        let items;
+        if (group.subGroup) {
+          const subIds = new Set(group.subGroup.ids);
+          const direct = maps.filter(m => !subIds.has(m.id));
+          const subMaps = maps.filter(m => subIds.has(m.id));
+          const directHtml = direct.map(m => `
+            <div class="map-option" data-id="${m.id}" onclick="window._selectMap('${m.id}')">
+              <div class="opt-title">${m.title}</div>
+              <div class="opt-sub">${m.subtitle}</div>
+            </div>
+          `).join('');
+          const subItems = subMaps.map(m => `
+            <div class="map-option" data-id="${m.id}" onclick="window._selectMap('${m.id}')">
+              <div class="opt-title">${m.title}</div>
+              <div class="opt-sub">${m.subtitle}</div>
+            </div>
+          `).join('');
+          const subGroupHtml = `
+            <div class="sb-subgroup" data-subgroup="${group.key}-styles">
+              <div class="sb-subgroup-header" onclick="toggleSubGroup('${group.key}-styles')">
+                <span class="sb-subgroup-label">${group.subGroup.label}</span>
+                <span class="sb-subgroup-chevron">▾</span>
+              </div>
+              <div class="sb-subgroup-items">${subItems}</div>
+            </div>
+          `;
+          items = directHtml + subGroupHtml;
+        } else {
+          items = maps.map(m => `
+            <div class="map-option" data-id="${m.id}" onclick="window._selectMap('${m.id}')">
+              <div class="opt-title">${m.title}</div>
+              <div class="opt-sub">${m.subtitle}</div>
+            </div>
+          `).join('');
+        }
         return `
           <div class="sb-group" data-group="${group.key}">
             <div class="sb-group-header" onclick="toggleGroup('${group.key}')">
@@ -357,6 +409,11 @@
           </div>
         `;
       }).join('');
+    }
+
+    function toggleSubGroup(key) {
+      const el = document.querySelector(`.sb-subgroup[data-subgroup="${key}"]`);
+      if (el) el.classList.toggle('open');
     }
 
     // ── Apply a map ───────────────────────────────────────────

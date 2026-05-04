@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>GCP Picker — Pinkerton 1818</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #eee; display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── Left: image canvas ── */
+  #canvas-wrap {
+    flex: 1; overflow: auto; position: relative; cursor: crosshair;
+    background: #0d0d1a;
+  }
+  #canvas-wrap canvas { display: block; }
+
+  /* ── Right: panel ── */
+  #panel {
+    width: 320px; flex-shrink: 0; display: flex; flex-direction: column;
+    background: #12122a; border-left: 1px solid #333; overflow: hidden;
+  }
+  #panel h1 { font-size: 0.9rem; padding: 14px 16px; background: #0d0d1a; border-bottom: 1px solid #333; letter-spacing: 0.05em; color: #aaa; }
+
+  /* zoom */
+  #zoom-bar { padding: 10px 16px; background: #0d0d1a; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 10px; }
+  #zoom-bar label { font-size: 0.75rem; color: #888; }
+  #zoom-range { flex: 1; }
+  #zoom-val { font-size: 0.75rem; color: #ccc; width: 36px; text-align: right; }
+
+  /* entry form */
+  #entry-form { padding: 14px 16px; border-bottom: 1px solid #333; background: #16163a; }
+  #entry-form h2 { font-size: 0.75rem; color: #888; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  #pending-info { font-size: 0.8rem; color: #ffd700; margin-bottom: 8px; min-height: 1.2em; }
+  .input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .input-row label { font-size: 0.72rem; color: #888; width: 55px; padding-top: 6px; flex-shrink: 0; }
+  .input-row input {
+    flex: 1; background: #0d0d1a; border: 1px solid #444; border-radius: 4px;
+    color: #fff; padding: 5px 8px; font-size: 0.82rem;
+  }
+  .input-row input:focus { outline: none; border-color: #6b8cff; }
+  #add-btn {
+    width: 100%; padding: 8px; background: #3a5bff; border: none; border-radius: 4px;
+    color: #fff; font-size: 0.82rem; cursor: pointer; letter-spacing: 0.05em;
+  }
+  #add-btn:hover { background: #5070ff; }
+  #add-btn:disabled { background: #333; color: #666; cursor: default; }
+
+  /* GCP list */
+  #gcp-list-wrap { flex: 1; overflow-y: auto; padding: 10px 16px; }
+  #gcp-list-wrap h2 { font-size: 0.72rem; color: #888; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .gcp-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0; border-bottom: 1px solid #222; font-size: 0.75rem;
+  }
+  .gcp-num { width: 20px; color: #f8a; font-weight: bold; flex-shrink: 0; }
+  .gcp-coords { flex: 1; color: #ccc; line-height: 1.5; }
+  .gcp-del { background: none; border: none; color: #f55; cursor: pointer; font-size: 1rem; padding: 2px 4px; }
+  .gcp-del:hover { color: #ff8888; }
+
+  /* output */
+  #output-wrap { padding: 12px 16px; border-top: 1px solid #333; background: #0d0d1a; }
+  #copy-btn, #run-btn {
+    width: 100%; padding: 9px; border: none; border-radius: 4px;
+    font-size: 0.82rem; cursor: pointer; margin-bottom: 6px; letter-spacing: 0.04em;
+  }
+  #copy-btn { background: #2a4a2a; color: #7dff7d; }
+  #copy-btn:hover { background: #3a6a3a; }
+  #run-btn { background: #4a2a0a; color: #ffb347; }
+  #run-btn:hover { background: #6a3a0a; }
+  #status { font-size: 0.72rem; color: #888; min-height: 1.2em; margin-top: 4px; text-align: center; }
+
+  /* tips */
+  #tips { padding: 10px 16px; font-size: 0.7rem; color: #555; border-top: 1px solid #222; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div id="canvas-wrap">
+  <canvas id="img-canvas"></canvas>
+</div>
+
+<div id="panel">
+  <h1>🗺 GCP Picker — Pinkerton 1818</h1>
+
+  <div id="zoom-bar">
+    <label>Zoom</label>
+    <input type="range" id="zoom-range" min="10" max="100" value="25">
+    <span id="zoom-val">25%</span>
+  </div>
+
+  <div id="entry-form">
+    <h2>Add Control Point</h2>
+    <div id="pending-info">Click on a grid intersection →</div>
+    <div class="input-row">
+      <label>Latitude</label>
+      <input type="number" id="inp-lat" placeholder="e.g. 25 (S hemisphere = negative auto)" step="0.01">
+      <small style="color:#aaa;font-size:11px">S hemisphere: enter positive degrees — auto-negated</small>
+    </div>
+    <div class="input-row">
+      <label>Longitude</label>
+      <input type="number" id="inp-lon" placeholder="e.g. 130.00" step="0.01">
+    </div>
+    <button id="add-btn" disabled>Add GCP</button>
+  </div>
+
+  <div id="gcp-list-wrap">
+    <h2>Control Points (<span id="gcp-count">0</span>)</h2>
+    <div id="gcp-list"></div>
+  </div>
+
+  <div id="output-wrap">
+    <button id="copy-btn">📋 Copy GCPs for Script</button>
+    <button id="run-btn">⚙️ Re-run Georeferencing</button>
+    <div id="status"></div>
+  </div>
+
+  <div id="tips">
+    <b>Tips:</b> Click grid line intersections (lat/lon crossings visible on the map).
+    Aim for 20–30 points spread across the whole image — corners, centre, and the curved meridians.
+    Known grid lines: 10°S, 20°S, 30°S, 40°S and 110°E, 120°E, 130°E, 140°E, 150°E, 160°E, 170°E.
+  </div>
+</div>
+
+<script>
+const IMG_W = 4965, IMG_H = 4636;
+const canvas = document.getElementById('img-canvas');
+const ctx = canvas.getContext('2d');
+
+let zoom = 0.25;
+let img = new Image();
+let gcps = []; // [{px, py, lon, lat}]
+let pending = null; // {px, py} waiting for lat/lon
+
+// ── Load image ──────────────────────────────────────────────
+img.onload = () => { redraw(); };
+img.src = 'data/pinkerton_1818_washed_preview.jpg';
+
+// ── Zoom slider ──────────────────────────────────────────────
+document.getElementById('zoom-range').addEventListener('input', e => {
+  zoom = parseInt(e.target.value) / 100;
+  document.getElementById('zoom-val').textContent = e.target.value + '%';
+  redraw();
+});
+
+// ── Canvas click ─────────────────────────────────────────────
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const cssX = e.clientX - rect.left;
+  const cssY = e.clientY - rect.top;
+  const px = Math.round(cssX / zoom);
+  const py = Math.round(cssY / zoom);
+  pending = { px, py };
+  document.getElementById('pending-info').textContent = `Selected: pixel (${px}, ${py})`;
+  document.getElementById('add-btn').disabled = false;
+  document.getElementById('inp-lat').focus();
+  redraw();
+});
+
+// ── Add GCP ───────────────────────────────────────────────────
+document.getElementById('add-btn').addEventListener('click', () => {
+  let lat = parseFloat(document.getElementById('inp-lat').value);
+  const lon = parseFloat(document.getElementById('inp-lon').value);
+  if (isNaN(lat) || isNaN(lon) || !pending) return;
+  // Auto-negate for southern hemisphere (Australia is entirely S)
+  if (lat > 0) lat = -lat;
+
+  gcps.push({ px: pending.px, py: pending.py, lon, lat });
+  pending = null;
+
+  document.getElementById('pending-info').textContent = 'Click on a grid intersection →';
+  document.getElementById('inp-lat').value = '';
+  document.getElementById('inp-lon').value = '';
+  document.getElementById('add-btn').disabled = true;
+
+  renderList();
+  redraw();
+  setStatus(`✓ GCP #${gcps.length} added`);
+});
+
+// Enter key submits
+document.getElementById('inp-lon').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('add-btn').click();
+});
+document.getElementById('inp-lat').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('inp-lon').focus();
+});
+
+// ── Render GCP list ───────────────────────────────────────────
+function renderList() {
+  document.getElementById('gcp-count').textContent = gcps.length;
+  document.getElementById('gcp-list').innerHTML = gcps.map((g, i) => `
+    <div class="gcp-item">
+      <span class="gcp-num">${i+1}</span>
+      <span class="gcp-coords">
+        px=${g.px}, py=${g.py}<br>
+        ${g.lat}°, ${g.lon}°E
+      </span>
+      <button class="gcp-del" onclick="deleteGcp(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+window.deleteGcp = function(i) {
+  gcps.splice(i, 1);
+  renderList();
+  redraw();
+};
+
+// ── Draw ──────────────────────────────────────────────────────
+function redraw() {
+  const w = Math.round(IMG_W * zoom);
+  const h = Math.round(IMG_H * zoom);
+  canvas.width = w;
+  canvas.height = h;
+
+  if (img.complete && img.naturalWidth) {
+    ctx.drawImage(img, 0, 0, w, h);
+  } else {
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#555';
+    ctx.font = '20px system-ui';
+    ctx.fillText('Loading image...', 20, 40);
+  }
+
+  // Draw saved GCPs
+  gcps.forEach((g, i) => {
+    const sx = g.px * zoom;
+    const sy = g.py * zoom;
+    drawMarker(sx, sy, `${i+1}`, '#00ff88');
+  });
+
+  // Draw pending
+  if (pending) {
+    const sx = pending.px * zoom;
+    const sy = pending.py * zoom;
+    drawMarker(sx, sy, '?', '#ffd700');
+  }
+}
+
+function drawMarker(x, y, label, color) {
+  const r = 7;
+  // Crosshair
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x - r*2, y); ctx.lineTo(x + r*2, y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, y - r*2); ctx.lineTo(x, y + r*2); ctx.stroke();
+  // Circle
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+  ctx.fillStyle = color + '44';
+  ctx.fill();
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  // Label
+  ctx.fillStyle = color;
+  ctx.font = `bold ${Math.max(10, 12*zoom/0.25)}px system-ui`;
+  ctx.fillText(label, x + r + 2, y - r);
+}
+
+// ── Copy GCPs ─────────────────────────────────────────────────
+document.getElementById('copy-btn').addEventListener('click', () => {
+  if (gcps.length === 0) { setStatus('No GCPs yet'); return; }
+  const lines = gcps.map(g =>
+    `    (-gcp, ${g.px}, ${g.py}, ${g.lon}, ${g.lat}),  # lat=${g.lat} lon=${g.lon}`
+  ).join('\n');
+  const out = `# ${gcps.length} GCPs — paste into georeference_pinkerton_1818.py\nGCPS = [\n${lines}\n]`;
+  navigator.clipboard.writeText(out).then(() => setStatus('✓ Copied to clipboard!'));
+});
+
+// ── Run georeferencing via fetch to local server ──────────────
+document.getElementById('run-btn').addEventListener('click', async () => {
+  if (gcps.length < 6) { setStatus('Need at least 6 GCPs'); return; }
+  setStatus('⏳ Running... (takes ~2 min)');
+  try {
+    const r = await fetch('/run-georeference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ gcps })
+    });
+    const data = await r.json();
+    if (data.ok) {
+      setStatus('✅ Done! Upload with: npx wrangler r2 object put ...');
+    } else {
+      setStatus('❌ Error: ' + data.error);
+    }
+  } catch {
+    setStatus('❌ Server not running — use Copy and run manually');
+  }
+});
+
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+</script>
+</body>
+</html>

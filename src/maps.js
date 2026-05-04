@@ -32,17 +32,17 @@ export const ATLAS_MAPS = [
         paint: {
           // Edit colours here — no PMTiles rebuild needed (matched on div field)
           'line-color': ['match', ['get', 'div'],
-            '1',  '#4aa441',  // NE Coast (QLD)
-            '2a', '#3a8d39',  // SE Coast (NSW)
+            '1',  '#3e9638',  // NE Coast (QLD)
+            '2a', '#327f3b',  // SE Coast (NSW)
             '2b', '#399e70',  // SE Coast (VIC)
             '3',  '#1ca9a2',  // Tasmania
             '4',  '#c8a128',  // Murray-Darling
             '5',  '#ffa33d',  // SA Gulf
             '6',  '#db5948',  // SW Plateau
             '7',  '#dca85c',  // SW Coast (WA)
-            '8',  '#c97a2e',  // Pilbara-Gascoyne
-            '9',  '#be9d5d',  // NW Plateau
-            '10', '#d0c738',  // Timor Sea (NT)
+            '8',  '#cd6831',  // Pilbara-Gascoyne
+            '9',  '#9c7631',  // NW Plateau
+            '10', '#cebf21',  // Timor Sea (NT)
             '11', '#d7ce6a',  // Lake Eyre Basin
             '12', '#93b843',  // Carpentaria Coast
             '#333333'],

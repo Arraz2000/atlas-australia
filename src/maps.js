@@ -13,6 +13,7 @@ export const ATLAS_MAPS = [
     story: 'Australia\'s river network mapped by drainage division — 13 basins coloured by watershed, with line weight scaled by upstream drainage area. Data from the Bureau of Meteorology Geofabric V3.3, showing 682,000 stream segments from the full SH_Network dataset.',
     palette: { background: '#0a0a0f', fill: ['#1a2a3a'], stroke: '#4a7a9b', text: '#c8d8e8' },
     noStateFills: true,
+    hideLayerPatterns: ['^River$', '^Other border', '^Disputed border$', '^Country border$'],
     baseStyle: { version: 8, glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MT}`, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] },
     baseStyleFetch: { url: `https://api.maptiler.com/maps/backdrop/style.json?key=${MT}`, gamma: 2.0, maxOut: 110 },
     cssFilter: 'brightness(1.0) saturate(1.0)',

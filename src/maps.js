@@ -24,6 +24,31 @@ export const ATLAS_MAPS = [
     ],
     layers: [
       {
+        id: 'rivers-lines-shadow',
+        type: 'line',
+        source: 'rivers',
+        'source-layer': 'rivers',
+        layout: { 'line-join': 'round', 'line-cap': 'round', visibility: 'none' },
+        paint: {
+          'line-color': '#000000',
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            3,  ['step', ['get', 'w'], 1.2, 0.001, 2.0, 0.05, 3.5],
+            5,  ['step', ['get', 'w'], 1.8, 0.001, 3.5, 0.05, 6.0],
+            7,  ['step', ['get', 'w'], 2.5, 0.001, 5.0, 0.05, 9.0],
+            10, ['step', ['get', 'w'], 10.0, 0.001, 32.0, 0.05, 50.0],
+            12, ['step', ['get', 'w'], 22.0, 0.001, 80.0, 0.05, 160.0],
+            14, ['step', ['get', 'w'], 36.0, 0.001, 120.0, 0.05, 220.0],
+          ],
+          'line-blur': 80,
+          'line-opacity': ['interpolate', ['linear'], ['zoom'],
+            3, ['interpolate', ['linear'], ['get', 'w'], 0, 0.20, 0.001, 0.45, 0.05, 0.65, 2.0, 0.80],
+            6, ['interpolate', ['linear'], ['get', 'w'], 0, 0.20, 0.001, 0.45, 0.05, 0.65, 2.0, 0.80],
+            9, 0,
+          ],
+        },
+      },
+      {
         id: 'rivers-lines',
         type: 'line',
         source: 'rivers',

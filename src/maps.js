@@ -56,21 +56,28 @@ export const ATLAS_MAPS = [
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
           // Edit colours here — no PMTiles rebuild needed (matched on div field)
-          'line-color': ['match', ['get', 'div'],
-            '1',  '#3e9638',  // NE Coast (QLD)
-            '2a', '#327f3b',  // SE Coast (NSW)
-            '2b', '#399e70',  // SE Coast (VIC)
-            '3',  '#1ca9a2',  // Tasmania
-            '4',  '#c8a128',  // Murray-Darling
-            '5',  '#ffa33d',  // SA Gulf
-            '6',  '#db5948',  // SW Plateau
-            '7',  '#dca85c',  // SW Coast (WA)
-            '8',  '#cd6831',  // Pilbara-Gascoyne
-            '9',  '#9c7631',  // NW Plateau
-            '10', '#cebf21',  // Timor Sea (NT)
-            '11', '#d7ce6a',  // Lake Eyre Basin
-            '12', '#93b843',  // Carpentaria Coast
-            '#333333'],
+          // Darkness-as-hierarchy: full opacity always, small streams get dark shade of basin colour
+          // → eliminates crossing-line artifact caused by alpha compositing of overlapping segments
+          'line-color': ['interpolate', ['linear'], ['get', 'w'],
+            0,     ['match', ['get', 'div'],
+              '1',  '#0a1a09',  '2a', '#091509',  '2b', '#0a1a10',
+              '3',  '#071e1d',  '4',  '#261e07',  '5',  '#261500',
+              '6',  '#220c08',  '7',  '#221908',  '8',  '#1e0e05',
+              '9',  '#160f05',  '10', '#1e1c05',  '11', '#201d0f',
+              '12', '#0f1a08',  '#0a0a0a'],
+            0.01,  ['match', ['get', 'div'],
+              '1',  '#1a4018',  '2a', '#143514',  '2b', '#163d2d',
+              '3',  '#0c3f3d',  '4',  '#4a3a0e',  '5',  '#4a2a00',
+              '6',  '#461f15',  '7',  '#443316',  '8',  '#3d2010',
+              '9',  '#2e220e',  '10', '#3e3a09',  '11', '#403d1f',
+              '12', '#2a3d15',  '#1a1a1a'],
+            0.05,  ['match', ['get', 'div'],
+              '1',  '#3e9638',  '2a', '#327f3b',  '2b', '#399e70',
+              '3',  '#1ca9a2',  '4',  '#c8a128',  '5',  '#ffa33d',
+              '6',  '#db5948',  '7',  '#dca85c',  '8',  '#cd6831',
+              '9',  '#9c7631',  '10', '#cebf21',  '11', '#d7ce6a',
+              '12', '#93b843',  '#333333'],
+          ],
           'line-width': [
             'interpolate', ['linear'], ['zoom'],
             3,  ['step', ['get', 'w'], 0.4, 0.001, 0.55, 0.05, 0.8],
@@ -80,12 +87,7 @@ export const ATLAS_MAPS = [
             12, ['step', ['get', 'w'], 6.5, 0.001, 26.0, 0.05, 50.0],
             14, ['step', ['get', 'w'], 10.0, 0.001, 38.0, 0.05, 72.0],
           ],
-          'line-opacity': ['interpolate', ['linear'], ['get', 'w'],
-            0,     0.25,
-            0.001, 0.55,
-            0.01,  0.75,
-            0.05,  1.0,
-          ],
+          'line-opacity': 1.0,
           'line-blur': 1.2,
         },
       },

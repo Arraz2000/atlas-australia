@@ -735,6 +735,11 @@
       if (mapDef.baseStyleFetch) {
         const { url, gamma = 2.6, maxOut = 70 } = mapDef.baseStyleFetch;
         style = await _fetchTransformedStyle(url, gamma, maxOut);
+      } else if (typeof style === 'string' && mapDef.hideLayerPatterns && mapDef.hideLayerPatterns.length) {
+        const resp = await fetch(style);
+        style = await resp.json();
+        const patterns = mapDef.hideLayerPatterns.map(p => new RegExp(p, 'i'));
+        style.layers = style.layers.filter(l => !patterns.some(re => re.test(l.id)));
       }
       map.setStyle(style);
       map.once('styledata', () => applyMap(mapDef));

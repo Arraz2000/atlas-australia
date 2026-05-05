@@ -91,7 +91,7 @@ export const ATLAS_MAPS = [
             14, ['interpolate', ['linear'], ['get', 'w'], 0, 7.0,  0.001, 18.0, 0.01, 34.0, 0.1, 58.0, 1.0, 85.0],
           ],
           'line-opacity': 1.0,
-          'line-blur': 0,
+          'line-blur': 1.2,
         },
       },
     ],

@@ -90,7 +90,12 @@ export const ATLAS_MAPS = [
             12, ['interpolate', ['linear'], ['get', 'w'], 0, 4.5,  0.001, 12.0, 0.01, 22.0, 0.1, 40.0, 1.0, 60.0],
             14, ['interpolate', ['linear'], ['get', 'w'], 0, 7.0,  0.001, 18.0, 0.01, 34.0, 0.1, 58.0, 1.0, 85.0],
           ],
-          'line-opacity': 1.0,
+          // Small rivers fade slightly below z8 — join artifact negligible at these widths (<1px)
+          'line-opacity': ['interpolate', ['linear'], ['zoom'],
+            5, ['interpolate', ['linear'], ['get', 'w'], 0, 0.45, 0.001, 0.55, 0.01, 0.75, 0.1, 0.95, 1.0, 1.0],
+            7, ['interpolate', ['linear'], ['get', 'w'], 0, 0.65, 0.001, 0.75, 0.01, 0.90, 0.1, 1.00, 1.0, 1.0],
+            8, 1.0,
+          ],
           'line-blur': 1.2,
         },
       },

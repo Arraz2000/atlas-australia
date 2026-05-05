@@ -195,6 +195,21 @@
       font-size: 10px !important;
     }
 
+    /* Zoom indicator */
+    #zoom-indicator {
+      position: absolute;
+      bottom: 28px;
+      right: 10px;
+      background: rgba(6,10,15,0.6);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.5);
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
     /* Fade transition */
     #map { transition: opacity 0.4s ease; }
     #map.fading { opacity: 0; }
@@ -282,6 +297,7 @@
 <body>
 
   <div id="map"></div>
+  <div id="zoom-indicator">z0</div>
 
   <div id="wordmark"><span>Atlas Australia</span></div>
 
@@ -374,6 +390,11 @@
 
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-right');
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+
+    const zoomEl = document.getElementById('zoom-indicator');
+    const updateZoom = () => zoomEl.textContent = 'z' + map.getZoom().toFixed(1);
+    map.on('zoom', updateZoom);
+    map.on('load', updateZoom);
 
     // ── Load states GeoJSON once ──────────────────────────────
     async function loadStates() {

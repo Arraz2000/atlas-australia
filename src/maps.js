@@ -611,6 +611,7 @@ export const ATLAS_MAPS = [
       text: '#94a3b8',
     },
     baseStyle: 'https://tiles.openfreemap.org/styles/dark',
+    hideLayerPatterns: ['^boundary_', '^place_'],
     sources: [],
     layers: [],
   },

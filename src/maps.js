@@ -4,14 +4,13 @@
 const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
-// Dark terrain: ESRI World Hillshade (light) inverted via raster-color curve
-// Flat plains (bright in original) → black; ridges/crevices (dark in original) → bright highlights
+// Dark terrain: ESRI World Hillshade Dark — pre-rendered, fast CDN, no API key
 const DARK_TERRAIN_STYLE = {
   version: 8,
   sources: {
     'esri-hillshade': {
       type: 'raster',
-      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade_Dark/MapServer/tile/{z}/{y}/{x}'],
       tileSize: 256,
       maxzoom: 16,
       attribution: 'Hillshade © Esri',
@@ -24,16 +23,10 @@ const DARK_TERRAIN_STYLE = {
       type: 'raster',
       source: 'esri-hillshade',
       paint: {
-        'raster-color': [
-          'interpolate', ['linear'], ['raster-value'],
-          0.0, '#d8d8d8',   // darkest (crevices/ridge shadows) → bright highlight
-          0.25, '#505050',  // steep falloff
-          0.45, '#0f0f0f',  // mid-light → near black
-          1.0, '#000000',   // flat plains (brightest) → pure black
-        ],
-        'raster-color-mix': [0.2126, 0.7152, 0.0722, 0],
-        'raster-color-range': [0, 1],
         'raster-opacity': 1.0,
+        'raster-brightness-min': 0,
+        'raster-brightness-max': 0.35,
+        'raster-contrast': 0.9,
       },
     },
   ],

@@ -810,20 +810,6 @@
 
     // ── Bootstrap ─────────────────────────────────────────────
     map.on('load', async () => {
-      // Apply raster-color inversion on hillshade layer post-load (crashes if in initial style)
-      try {
-        map.setPaintProperty('hillshade', 'raster-color', [
-          'interpolate', ['linear'], ['raster-value'],
-          0.0, '#b0b0b0',
-          0.15, '#181818',
-          1.0, '#000000',
-        ]);
-        map.setPaintProperty('hillshade', 'raster-brightness-max', 1);
-        map.setPaintProperty('hillshade', 'raster-contrast', 0);
-        map.setPaintProperty('hillshade', 'raster-saturation', 0);
-      } catch(e) {
-        console.warn('raster-color not supported, using brightness fallback', e);
-      }
       await loadStates();
       buildSidebar();
       // Honour ?map=id in URL, otherwise load first map

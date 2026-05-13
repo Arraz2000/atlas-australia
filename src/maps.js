@@ -5,13 +5,15 @@ const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
 // Dark terrain: ESRI World Hillshade Dark — CORS enabled, fast CDN, no API key
-// AWS Terrarium blocked by CORS from ozmap.au; raster-color expression crashes MapLibre v5
+// World_Hillshade (LIGHT): flat land ~230 → invert → ~25 → gamma 2.5 → near-black ✓
+// World_Hillshade_Dark was wrong: flat land ~128 → invert → ~127 → still gray
+// transformRequest in index.html intercepts tiles, pixel-inverts + applies gamma
 const DARK_TERRAIN_STYLE = {
   version: 8,
   sources: {
     'esri-hillshade': {
       type: 'raster',
-      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade_Dark/MapServer/tile/{z}/{y}/{x}'],
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
       tileSize: 256,
       maxzoom: 16,
       attribution: 'Hillshade © Esri',
@@ -24,7 +26,7 @@ const DARK_TERRAIN_STYLE = {
       type: 'raster',
       source: 'esri-hillshade',
       paint: {
-        'raster-opacity': 0.9,
+        'raster-opacity': 1,
         'raster-brightness-min': 0,
         'raster-brightness-max': 1,
         'raster-contrast': 0,

@@ -4,30 +4,30 @@
 const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
-// Dark terrain style using ESRI World Hillshade Dark — pre-rendered raster, fast CDN, no API key
-// Much faster than elevation→hillshade computation (client-side) used by AWS Terrarium approach
+// Dark terrain style — ESRI World Hillshade (light/standard) on black background
+// High contrast + low brightness-max collapses flat midtones to black, leaving only ridge highlights
 const DARK_TERRAIN_STYLE = {
   version: 8,
   sources: {
     'esri-hillshade': {
       type: 'raster',
-      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade_Dark/MapServer/tile/{z}/{y}/{x}'],
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
       tileSize: 256,
       maxzoom: 16,
       attribution: 'Hillshade © Esri',
     },
   },
   layers: [
-    { id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } },
+    { id: 'bg', type: 'background', paint: { 'background-color': '#000000' } },
     {
       id: 'hillshade',
       type: 'raster',
       source: 'esri-hillshade',
       paint: {
-        'raster-opacity': 0.85,
+        'raster-opacity': 0.9,
         'raster-brightness-min': 0,
-        'raster-brightness-max': 0.55,
-        'raster-contrast': 0.2,
+        'raster-brightness-max': 0.45,
+        'raster-contrast': 0.75,
       },
     },
   ],

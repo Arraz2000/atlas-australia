@@ -4,31 +4,30 @@
 const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
-// Free self-hosted dark terrain style — AWS Terrarium elevation tiles, no API key required
+// Dark terrain style using ESRI World Hillshade Dark — pre-rendered raster, fast CDN, no API key
+// Much faster than elevation→hillshade computation (client-side) used by AWS Terrarium approach
 const DARK_TERRAIN_STYLE = {
   version: 8,
   sources: {
-    'terrain-dem': {
-      type: 'raster-dem',
-      tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-      encoding: 'terrarium',
+    'esri-hillshade': {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade_Dark/MapServer/tile/{z}/{y}/{x}'],
       tileSize: 256,
-      maxzoom: 14,
-      attribution: 'Terrain © Mapzen/AWS',
+      maxzoom: 16,
+      attribution: 'Hillshade © Esri',
     },
   },
   layers: [
     { id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } },
     {
       id: 'hillshade',
-      type: 'hillshade',
-      source: 'terrain-dem',
+      type: 'raster',
+      source: 'esri-hillshade',
       paint: {
-        'hillshade-shadow-color': '#000000',
-        'hillshade-highlight-color': '#16221a',
-        'hillshade-accent-color': '#050805',
-        'hillshade-exaggeration': 0.55,
-        'hillshade-illumination-direction': 335,
+        'raster-opacity': 0.85,
+        'raster-brightness-min': 0,
+        'raster-brightness-max': 0.55,
+        'raster-contrast': 0.2,
       },
     },
   ],

@@ -378,6 +378,25 @@
       // No maxBounds — it forces zoom up as window widens, defeating height-based sizing
       attributionControl: false,
       preserveDrawingBuffer: true,
+      transformRequest: async (url, resourceType) => {
+        if (resourceType === 'Tile' && url.includes('World_Hillshade_Dark')) {
+          const resp = await fetch(url);
+          const blob = await resp.blob();
+          const bitmap = await createImageBitmap(blob);
+          const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
+          const ctx = oc.getContext('2d');
+          ctx.drawImage(bitmap, 0, 0);
+          const d = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+          for (let i = 0; i < d.data.length; i += 4) {
+            d.data[i]   = 255 - d.data[i];
+            d.data[i+1] = 255 - d.data[i+1];
+            d.data[i+2] = 255 - d.data[i+2];
+          }
+          ctx.putImageData(d, 0, 0);
+          const inv = await oc.convertToBlob({ type: 'image/jpeg', quality: 0.85 });
+          return { url: URL.createObjectURL(inv) };
+        }
+      },
     });
 
     // Re-fit on resize — only if user hasn't zoomed away from home

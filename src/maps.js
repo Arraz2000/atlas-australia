@@ -24,10 +24,10 @@ const DARK_TERRAIN_STYLE = {
       type: 'raster',
       source: 'esri-hillshade',
       paint: {
-        'raster-opacity': 1.0,
+        'raster-opacity': 0.9,
         'raster-brightness-min': 0,
-        'raster-brightness-max': 0.52,
-        'raster-contrast': 0.45,
+        'raster-brightness-max': 1,
+        'raster-contrast': 0,
         'raster-saturation': -1,
       },
     },

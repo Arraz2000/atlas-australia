@@ -580,11 +580,34 @@
       // Hide style layers matching any pattern in hideLayerPatterns
       if (mapDef.hideLayerPatterns && mapDef.hideLayerPatterns.length) {
         const patterns = mapDef.hideLayerPatterns.map(p => new RegExp(p, 'i'));
-        map.getStyle().layers.forEach(l => {
-          if (patterns.some(re => re.test(l.id))) {
-            map.setLayoutProperty(l.id, 'visibility', 'none');
-          }
-        });
+        const _hideLayers = () => {
+          try {
+            map.getStyle().layers.forEach(l => {
+              if (patterns.some(re => re.test(l.id))) {
+                try { map.setLayoutProperty(l.id, 'visibility', 'none'); } catch(e) {}
+              }
+            });
+          } catch(e) {}
+        };
+        _hideLayers();
+        map.once('idle', _hideLayers);
+      }
+
+      // Dim style layers matching paintOverrides patterns (e.g. subtle land outlines)
+      if (mapDef.paintOverrides && mapDef.paintOverrides.length) {
+        const _applyOverrides = () => {
+          try {
+            map.getStyle().layers.forEach(l => {
+              mapDef.paintOverrides.forEach(({ pattern, property, value }) => {
+                if (new RegExp(pattern, 'i').test(l.id)) {
+                  try { map.setPaintProperty(l.id, property, value); } catch(e) {}
+                }
+              });
+            });
+          } catch(e) {}
+        };
+        _applyOverrides();
+        map.once('idle', _applyOverrides);
       }
 
       // Enable / disable 3D terrain
@@ -725,6 +748,9 @@
       currentMapId = id;
       closeSidebar();
 
+      // Update URL without triggering a page reload
+      history.pushState({mapId: id}, '', `?map=${id}`);
+
       // Reset to default Australia view when switching maps, or map's custom view
       const center = mapDef.initialCenter || DEFAULT_VIEW.center;
       const zoom   = mapDef.initialZoom   || calcAustraliaZoom();
@@ -736,10 +762,15 @@
         const { url, gamma = 2.6, maxOut = 70 } = mapDef.baseStyleFetch;
         style = await _fetchTransformedStyle(url, gamma, maxOut);
       } else if (typeof style === 'string' && mapDef.hideLayerPatterns && mapDef.hideLayerPatterns.length) {
-        const resp = await fetch(style);
-        style = await resp.json();
-        const patterns = mapDef.hideLayerPatterns.map(p => new RegExp(p, 'i'));
-        style.layers = style.layers.filter(l => !patterns.some(re => re.test(l.id)));
+        try {
+          const resp = await fetch(style);
+          const json = await resp.json();
+          const patterns = mapDef.hideLayerPatterns.map(p => new RegExp(p, 'i'));
+          json.layers = json.layers.filter(l => !patterns.some(re => re.test(l.id)));
+          style = json;
+        } catch(e) {
+          // fetch failed — style stays as URL; idle-based fallback in applyMap will hide layers
+        }
       }
       map.setStyle(style);
       map.once('styledata', () => applyMap(mapDef));
@@ -778,9 +809,11 @@
     map.on('load', async () => {
       await loadStates();
       buildSidebar();
-      // Load first map — same style logic as _selectMap to handle baseStyleFetch
-      const first = ATLAS_MAPS[0];
+      // Honour ?map=id in URL, otherwise load first map
+      const urlMapId = new URLSearchParams(window.location.search).get('map');
+      const first = (urlMapId && ATLAS_MAPS.find(m => m && m.id === urlMapId)) || ATLAS_MAPS[0];
       currentMapId = first.id;
+      updateSidebarActive(first.id);
       let initStyle = first.baseStyle;
       if (first.baseStyleFetch) {
         const { url, gamma = 2.6, maxOut = 70 } = first.baseStyleFetch;
@@ -799,8 +832,6 @@
 
       const riversDef = ATLAS_MAPS.find(m => m && m.id === 'rivers');
       const bg = btn.dataset.bg;
-      // Extract MT key from the already-resolved baseStyleFetch URL
-      const mtKey = new URL(riversDef.baseStyleFetch.url).searchParams.get('key');
 
       let style;
       if (bg === 'black') {
@@ -809,10 +840,10 @@
         const { url, gamma = 2.0, maxOut = 110 } = riversDef.baseStyleFetch;
         style = await _fetchTransformedStyle(url, gamma, maxOut);
       } else if (bg === 'satellite') {
-        const resp = await fetch(`https://api.maptiler.com/maps/satellite/style.json?key=${mtKey}`);
-        style = await resp.json();
+        // ESRI World Imagery — free, no key required
+        style = { version: 8, sources: { esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, attribution: '© Esri, Maxar, Earthstar Geographics' } }, layers: [{ id: 'esri-satellite', type: 'raster', source: 'esri' }] };
       } else if (bg === 'topo') {
-        const resp = await fetch(`https://api.maptiler.com/maps/topo-v2/style.json?key=${mtKey}`);
+        const resp = await fetch('https://tiles.openfreemap.org/styles/positron');
         style = await resp.json();
       }
 

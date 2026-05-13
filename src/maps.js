@@ -4,32 +4,33 @@
 const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
-// Dark terrain: ESRI World Hillshade Dark — pre-rendered, fast CDN, no API key
+// Dark terrain: AWS Terrarium elevation → MapLibre computed hillshade
+// hillshade-accent-color controls flat areas (black), highlight-color controls ridges (bright)
+// This naturally gives the "bright ridges on black flat land" look without any raster-color hack
 const DARK_TERRAIN_STYLE = {
   version: 8,
   sources: {
-    'esri-hillshade': {
-      type: 'raster',
-      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade_Dark/MapServer/tile/{z}/{y}/{x}'],
+    'terrain-dem': {
+      type: 'raster-dem',
+      tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+      encoding: 'terrarium',
       tileSize: 256,
-      maxzoom: 16,
-      attribution: 'Hillshade © Esri',
+      maxzoom: 14,
+      attribution: 'Terrain © Mapzen/AWS',
     },
   },
   layers: [
     { id: 'bg', type: 'background', paint: { 'background-color': '#000000' } },
     {
       id: 'hillshade',
-      type: 'raster',
-      source: 'esri-hillshade',
+      type: 'hillshade',
+      source: 'terrain-dem',
       paint: {
-        'raster-color': [
-          'interpolate', ['linear'], ['raster-value'],
-          0.0, '#b0b0b0',
-          0.15, '#202020',
-          1.0, '#000000',
-        ],
-        'raster-opacity': 0.95,
+        'hillshade-shadow-color': '#000000',
+        'hillshade-highlight-color': '#b8b8b8',
+        'hillshade-accent-color': '#000000',
+        'hillshade-exaggeration': 1.1,
+        'hillshade-illumination-direction': 335,
       },
     },
   ],

@@ -4,6 +4,36 @@
 const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
+// Free self-hosted dark terrain style — AWS Terrarium elevation tiles, no API key required
+const DARK_TERRAIN_STYLE = {
+  version: 8,
+  sources: {
+    'terrain-dem': {
+      type: 'raster-dem',
+      tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+      encoding: 'terrarium',
+      tileSize: 256,
+      maxzoom: 14,
+      attribution: 'Terrain © Mapzen/AWS',
+    },
+  },
+  layers: [
+    { id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } },
+    {
+      id: 'hillshade',
+      type: 'hillshade',
+      source: 'terrain-dem',
+      paint: {
+        'hillshade-shadow-color': '#000000',
+        'hillshade-highlight-color': '#16221a',
+        'hillshade-accent-color': '#050805',
+        'hillshade-exaggeration': 0.55,
+        'hillshade-illumination-direction': 335,
+      },
+    },
+  ],
+};
+
 export const ATLAS_MAPS = [
   {
     id: 'rivers',
@@ -15,8 +45,8 @@ export const ATLAS_MAPS = [
     noStateFills: true,
     hideLayerPatterns: ['^River$', '^Other border', '^Disputed border', '^Country border', 'labels$'],
     paintOverrides: [{ pattern: '^Land outline', property: 'line-opacity', value: 0.25 }],
-    baseStyle: { version: 8, glyphs: `https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf`, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] },
-    baseStyleFetch: { url: 'https://tiles.openfreemap.org/styles/dark', gamma: 2.0, maxOut: 110 },
+    baseStyleBlack: { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] },
+    baseStyle: DARK_TERRAIN_STYLE,
     cssFilter: 'brightness(1.0) saturate(1.0)',
     sources: [
       {

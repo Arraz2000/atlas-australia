@@ -615,8 +615,11 @@
         if (!map.getSource('terrain-dem')) {
           map.addSource('terrain-dem', {
             type: 'raster-dem',
-            url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${MT}`,
+            tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+            encoding: 'terrarium',
             tileSize: 256,
+            maxzoom: 14,
+            attribution: 'Terrain © Mapzen/AWS',
           });
         }
         map.setTerrain({ source: 'terrain-dem', exaggeration: 1.5 });
@@ -835,10 +838,9 @@
 
       let style;
       if (bg === 'black') {
-        style = riversDef.baseStyle; // minimal dark style, no backdrop tiles
+        style = riversDef.baseStyleBlack || { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0a0a0f' } }] };
       } else if (bg === 'backdrop') {
-        const { url, gamma = 2.0, maxOut = 110 } = riversDef.baseStyleFetch;
-        style = await _fetchTransformedStyle(url, gamma, maxOut);
+        style = riversDef.baseStyle; // DARK_TERRAIN_STYLE — self-hosted AWS hillshade
       } else if (bg === 'satellite') {
         // ESRI World Imagery — free, no key required
         style = { version: 8, sources: { esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, attribution: '© Esri, Maxar, Earthstar Geographics' } }, layers: [{ id: 'esri-satellite', type: 'raster', source: 'esri' }] };

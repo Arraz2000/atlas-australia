@@ -25,8 +25,8 @@ const DARK_TERRAIN_STYLE = {
       paint: {
         'raster-opacity': 1.0,
         'raster-brightness-min': 0,
-        'raster-brightness-max': 0.35,
-        'raster-contrast': 0.9,
+        'raster-brightness-max': 0.48,
+        'raster-contrast': 0.35,
       },
     },
   ],

@@ -4,33 +4,31 @@
 const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
-// Dark terrain: AWS Terrarium elevation → MapLibre computed hillshade
-// hillshade-accent-color controls flat areas (black), highlight-color controls ridges (bright)
-// This naturally gives the "bright ridges on black flat land" look without any raster-color hack
+// Dark terrain: ESRI World Hillshade Dark — CORS enabled, fast CDN, no API key
+// AWS Terrarium blocked by CORS from ozmap.au; raster-color expression crashes MapLibre v5
 const DARK_TERRAIN_STYLE = {
   version: 8,
   sources: {
-    'terrain-dem': {
-      type: 'raster-dem',
-      tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-      encoding: 'terrarium',
+    'esri-hillshade': {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade_Dark/MapServer/tile/{z}/{y}/{x}'],
       tileSize: 256,
-      maxzoom: 14,
-      attribution: 'Terrain © Mapzen/AWS',
+      maxzoom: 16,
+      attribution: 'Hillshade © Esri',
     },
   },
   layers: [
     { id: 'bg', type: 'background', paint: { 'background-color': '#000000' } },
     {
       id: 'hillshade',
-      type: 'hillshade',
-      source: 'terrain-dem',
+      type: 'raster',
+      source: 'esri-hillshade',
       paint: {
-        'hillshade-shadow-color': '#000000',
-        'hillshade-highlight-color': '#b8b8b8',
-        'hillshade-accent-color': '#000000',
-        'hillshade-exaggeration': 1.1,
-        'hillshade-illumination-direction': 335,
+        'raster-opacity': 1.0,
+        'raster-brightness-min': 0,
+        'raster-brightness-max': 0.52,
+        'raster-contrast': 0.45,
+        'raster-saturation': -1,
       },
     },
   ],

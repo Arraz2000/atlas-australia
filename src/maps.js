@@ -4,8 +4,8 @@
 const MT = import.meta.env.VITE_MAPTILER_KEY;
 const R2 = 'https://pub-26caeb1ace954a54baf5c3dc9fdc4fec.r2.dev';
 
-// Dark terrain style — ESRI World Hillshade (light/standard) on black background
-// High contrast + low brightness-max collapses flat midtones to black, leaving only ridge highlights
+// Dark terrain: ESRI World Hillshade (light) inverted via raster-color curve
+// Flat plains (bright in original) → black; ridges/crevices (dark in original) → bright highlights
 const DARK_TERRAIN_STYLE = {
   version: 8,
   sources: {
@@ -24,10 +24,16 @@ const DARK_TERRAIN_STYLE = {
       type: 'raster',
       source: 'esri-hillshade',
       paint: {
-        'raster-opacity': 0.9,
-        'raster-brightness-min': 0,
-        'raster-brightness-max': 0.45,
-        'raster-contrast': 0.75,
+        'raster-color': [
+          'interpolate', ['linear'], ['raster-value'],
+          0.0, '#d8d8d8',   // darkest (crevices/ridge shadows) → bright highlight
+          0.25, '#505050',  // steep falloff
+          0.45, '#0f0f0f',  // mid-light → near black
+          1.0, '#000000',   // flat plains (brightest) → pure black
+        ],
+        'raster-color-mix': [0.2126, 0.7152, 0.0722, 0],
+        'raster-color-range': [0, 1],
+        'raster-opacity': 1.0,
       },
     },
   ],

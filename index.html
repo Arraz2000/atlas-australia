@@ -370,7 +370,7 @@
     // ── Init map ──────────────────────────────────────────────
     const map = new maplibregl.Map({
       container: 'map',
-      style: ATLAS_MAPS[0].baseStyle,
+      style: { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#000000' } }] },
       center: DEFAULT_VIEW.center,
       zoom: calcAustraliaZoom(),
       minZoom: DEFAULT_VIEW.minZoom,
@@ -848,7 +848,9 @@
         map.setStyle(initStyle);
         map.once('styledata', () => applyMap(first));
       } else {
-        await applyMap(first);
+        // Use setStyle + styledata (same as _selectMap) — reliable layer ordering
+        map.setStyle(first.baseStyle);
+        map.once('styledata', () => applyMap(first));
       }
     });
 

@@ -4,6 +4,10 @@
 
 const ESRI_HILLSHADE = 'World_Hillshade/MapServer/tile/';
 
+// Activate immediately — don't wait for old SW to vacate
+self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+
 self.addEventListener('fetch', event => {
   if (!event.request.url.includes(ESRI_HILLSHADE)) return;
 

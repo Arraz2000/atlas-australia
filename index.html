@@ -378,29 +378,30 @@
       // No maxBounds — it forces zoom up as window widens, defeating height-based sizing
       attributionControl: false,
       preserveDrawingBuffer: true,
-      transformRequest: async (url, resourceType) => {
-        // Match light hillshade only (World_Hillshade/MapServer — not World_Hillshade_Dark)
+      transformRequest: (url, resourceType) => {
+        // Only intercept ESRI light hillshade tiles — return explicit Promise for those only.
+        // Must NOT be async (would return Promise<undefined> for all other URLs,
+        // crashing MapLibre's geojson_source.ts which doesn't await transformRequest).
         if (resourceType === 'Tile' && url.includes('World_Hillshade/MapServer')) {
-          const resp = await fetch(url);
-          const blob = await resp.blob();
-          const bitmap = await createImageBitmap(blob);
-          const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
-          const ctx = oc.getContext('2d');
-          ctx.drawImage(bitmap, 0, 0);
-          const d = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
-          for (let i = 0; i < d.data.length; i += 4) {
-            // Invert then apply gamma 2.5: pushes near-blacks to absolute black,
-            // keeps bright features (mountain shadow edges) bright.
-            // Light hillshade flat plains: ~230 → invert 25 → gamma → ~1 (jet black) ✓
-            // Mountain shadow faces:       ~80  → invert 175 → gamma → ~138 (bright) ✓
-            d.data[i]   = Math.pow((255 - d.data[i])   / 255, 2.5) * 255;
-            d.data[i+1] = Math.pow((255 - d.data[i+1]) / 255, 2.5) * 255;
-            d.data[i+2] = Math.pow((255 - d.data[i+2]) / 255, 2.5) * 255;
-          }
-          ctx.putImageData(d, 0, 0);
-          const inv = await oc.convertToBlob({ type: 'image/jpeg', quality: 0.9 });
-          return { url: URL.createObjectURL(inv) };
+          return (async () => {
+            const resp = await fetch(url);
+            const blob = await resp.blob();
+            const bitmap = await createImageBitmap(blob);
+            const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
+            const ctx = oc.getContext('2d');
+            ctx.drawImage(bitmap, 0, 0);
+            const d = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+            for (let i = 0; i < d.data.length; i += 4) {
+              d.data[i]   = Math.pow((255 - d.data[i])   / 255, 2.5) * 255;
+              d.data[i+1] = Math.pow((255 - d.data[i+1]) / 255, 2.5) * 255;
+              d.data[i+2] = Math.pow((255 - d.data[i+2]) / 255, 2.5) * 255;
+            }
+            ctx.putImageData(d, 0, 0);
+            const inv = await oc.convertToBlob({ type: 'image/jpeg', quality: 0.9 });
+            return { url: URL.createObjectURL(inv) };
+          })();
         }
+        // All other URLs: return undefined (not a Promise) so MapLibre uses them as-is
       },
     });
 

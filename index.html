@@ -398,7 +398,7 @@
             }
             ctx.putImageData(d, 0, 0);
             const inv = await oc.convertToBlob({ type: 'image/jpeg', quality: 0.9 });
-            return { url: URL.createObjectURL(inv) };
+            return { url: URL.createObjectURL(inv), abortController: new AbortController() };
           })();
         }
         // All other URLs: return undefined (not a Promise) so MapLibre uses them as-is

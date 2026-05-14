@@ -841,17 +841,25 @@
       const first = (urlMapId && ATLAS_MAPS.find(m => m && m.id === urlMapId)) || ATLAS_MAPS[0];
       currentMapId = first.id;
       updateSidebarActive(first.id);
-      let initStyle = first.baseStyle;
       if (first.baseStyleFetch) {
         const { url, gamma = 2.6, maxOut = 70 } = first.baseStyleFetch;
-        initStyle = await _fetchTransformedStyle(url, gamma, maxOut);
+        const initStyle = await _fetchTransformedStyle(url, gamma, maxOut);
         map.setStyle(initStyle);
-        map.once('styledata', () => applyMap(first));
       } else {
-        // Use setStyle + styledata (same as _selectMap) — reliable layer ordering
         map.setStyle(first.baseStyle);
-        map.once('styledata', () => applyMap(first));
       }
+      // Always use styledata → applyMap. Works whether baseStyleFetch or not.
+      map.once('styledata', () => applyMap(first));
+
+      // Safety net: if key layers are missing after idle, re-apply.
+      // Prevents silent failures from config changes breaking the init flow.
+      map.once('idle', () => {
+        const firstLayerId = (first.layers || [])[0]?.id;
+        if (firstLayerId && !map.getLayer(firstLayerId)) {
+          console.warn('[atlas] Safety net triggered — re-applying map:', first.id);
+          applyMap(first);
+        }
+      });
     });
 
     // ── Rivers background switcher ────────────────────────────────
